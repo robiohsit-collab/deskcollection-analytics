@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeskCollection Analytics</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#060b14;color:#fff;font-family:'Inter',system-ui,sans-serif;min-height:100vh}
+.topbar{position:sticky;top:0;z-index:40;backdrop-filter:blur(20px);background:rgba(6,11,20,0.9);border-bottom:1px solid rgba(255,255,255,0.06);height:52px;display:flex;align-items:center;padding:0 24px;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#6366f1,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff}
+.logo-text{font-size:13px;font-weight:700}
+.live-badge{display:flex;align-items:center;gap:6px;font-size:11px;color:#4ade80;font-weight:500}
+.pulse{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.container{max-width:1200px;margin:0 auto;padding:32px 24px}
+.eyebrow{font-size:11px;color:#818cf8;text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:8px}
+.page-title{font-size:32px;font-weight:900;line-height:1.1;margin-bottom:8px}
+.page-desc{font-size:13px;color:#64748b;max-width:500px;line-height:1.6;margin-bottom:32px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+@media(max-width:700px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+.kpi-card{background:#0f172a;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:16px}
+.kpi-label{font-size:11px;color:#64748b;margin-bottom:8px;line-height:1.4}
+.kpi-val{font-size:22px;font-weight:900;line-height:1}
+.kpi-delta{font-size:11px;margin-top:5px;font-weight:500}
+.section-card{background:#0f172a;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:20px;margin-bottom:24px}
+.section-eyebrow{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.section-title{font-size:15px;font-weight:700}
+.legend{display:flex;gap:14px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#94a3b8}
+.legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.trend-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.trend-name{font-size:11px;font-weight:700;text-align:right;flex-shrink:0;width:100px}
+.bars{display:flex;gap:5px;align-items:flex-end;height:36px;flex:1}
+.bar-wrap{display:flex;flex-direction:column;align-items:center;flex:1;height:100%}
+.bar{width:100%;border-radius:3px;transition:height .4s}
+.bar-lbl{font-size:8px;color:#475569;margin-top:3px}
+.cur-val{font-size:11px;font-weight:800;flex-shrink:0;width:36px;text-align:right}
+.project-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+@media(max-width:900px){.project-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.project-grid{grid-template-columns:1fr}}
+.proj-card{background:#0a1628;border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:18px;cursor:pointer;transition:all .2s}
+.proj-card:hover{background:#0f2040;border-color:rgba(255,255,255,0.18);transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,0.4)}
+.proj-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.proj-meta{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.proj-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.proj-name{font-size:16px;font-weight:900}
+.rank-badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600}
+.akun-num{font-size:40px;font-weight:900;line-height:1;margin-bottom:2px}
+.akun-sub{font-size:11px;color:#334155}
+.sparkline-wrap{margin:12px -2px;height:44px}
+.proj-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)}
+.stat-label{font-size:10px;color:#334155;margin-bottom:2px}
+.stat-val{font-size:12px;font-weight:700;color:#cbd5e1}
+.table-wrap{background:#0f172a;border:1px solid rgba(255,255,255,0.08);border-radius:20px;overflow:hidden;margin-bottom:24px}
+.table-head{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.07)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:center;padding:10px;color:#475569;font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;border-bottom:1px solid rgba(255,255,255,0.07);white-space:nowrap}
+th:first-child{text-align:left;padding-left:20px}
+td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.04);text-align:center;white-space:nowrap}
+td:first-child{text-align:left;padding-left:20px}
+tr:hover td{background:rgba(255,255,255,0.02);cursor:pointer}
+.total-row td{background:#1e293b!important;font-weight:700;border-top:1px solid rgba(255,255,255,0.1)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:50;display:none;align-items:center;justify-content:center;padding:16px}
+.modal{background:#0d1827;border-radius:24px;padding:28px;width:100%;max-width:640px;max-height:90vh;overflow-y:auto}
+.modal-close{color:#64748b;font-size:22px;cursor:pointer;background:none;border:none;line-height:1}
+.modal-close:hover{color:#fff}
+.bucket-tag{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;display:inline-block;margin:3px}
+.detail-bars{display:flex;align-items:flex-end;gap:6px;height:120px;margin-bottom:6px}
+.detail-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;height:100%}
+.detail-bar-val{font-size:10px;font-weight:700;margin-bottom:4px}
+.detail-bar{width:100%;border-radius:4px}
+.detail-bar-month{font-size:9px;color:#475569;margin-top:4px}
+.modal-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.08)}
+.modal-stat{border-radius:12px;padding:12px}
+.modal-stat-label{font-size:10px;color:#64748b;margin-bottom:4px}
+.modal-stat-val{font-size:18px;font-weight:900}
+.error-banner{background:#450a0a;border:1px solid #7f1d1d;border-radius:12px;padding:16px 20px;margin-bottom:24px;font-size:13px;color:#fca5a5}
+.api-notice{background:#1e1b4b;border:1px solid #3730a3;border-radius:12px;padding:16px 20px;margin-bottom:24px;font-size:12px;color:#a5b4fc;line-height:1.7}
+.footer{text-align:center;font-size:11px;color:#1e293b;padding:20px 0 8px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">DC</div>
+    <span class="logo-text">DeskCollection Analytics</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px">
+    <span style="font-size:11px;color:#1e293b" id="lastUpdate"></span>
+    <div class="live-badge"><div class="pulse"></div><span id="liveStatus">Memuat...</span></div>
+  </div>
+</div>
+<div class="container">
+  <div id="errorBanner" style="display:none" class="error-banner"></div>
+  <div id="apiNotice" class="api-notice">
+    <strong>📋 Demo Mode</strong> — Untuk connect ke data realtime:<br>
+    1. Paste kode <strong>AppsScript_DeskCollection_v7.js</strong> ke Apps Script<br>
+    2. Deploy sebagai Web App → copy URL<br>
+    3. Ganti <strong>API_URL</strong> di file ini dengan URL tersebut → upload ke Vercel
+  </div>
+  <div class="eyebrow" id="periodLabel">Desk Collection — 2025</div>
+  <h1 class="page-title">Overview Semua Project</h1>
+  <p class="page-desc">Perkembangan jumlah akun per project dari Januari hingga bulan berjalan. Klik project untuk detail tren dan breakdown bucket.</p>
+  <div class="kpi-grid" id="kpiGrid"></div>
+  <div class="section-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:18px">
+      <div>
+        <div class="section-eyebrow">Tren Akun Bulanan</div>
+        <div class="section-title" id="trendTitle">Semua Project</div>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div id="trendChart"></div>
+  </div>
+  <div style="font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px">
+    Detail Per Project — klik untuk breakdown
+  </div>
+  <div class="project-grid" id="projectGrid"></div>
+  <div class="table-wrap">
+    <div class="table-head">
+      <div class="section-eyebrow">Ringkasan</div>
+      <div class="section-title">Tabel Akun per Bulan (Jan — bulan berjalan)</div>
+    </div>
+    <div style="overflow-x:auto"><table id="mainTable"></table></div>
+  </div>
+  <div class="footer" id="footerText"></div>
+</div>
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalContent"></div>
+</div>
+<script>
+// ══════════════════════════════════════════════════════════════════════════════
+// GANTI DENGAN URL APPS SCRIPT WEB APP KAMU
+// Cara: Apps Script → Deploy → New Deployment → Web App → Anyone → Deploy → Copy URL
+const API_URL = "PASTE_URL_APPS_SCRIPT_DI_SINI";
+// ══════════════════════════════════════════════════════════════════════════════
+
+let G = null;
+const delta  = (a,i) => i>0?a[i]-a[i-1]:0;
+const dStr   = d => d===0?"":(d>0?"+":"")+d;
+const dColor = d => d>0?"#4ade80":d<0?"#f87171":"#64748b";
+
+function sparkSVG(data,color,curIdx){
+  const pts=data.slice(0,curIdx+1).filter(v=>v>0);
+  if(pts.length<2)return "";
+  const W=120,H=44,mn=Math.min(...pts),mx=Math.max(...pts),rng=mx-mn||1;
+  const xs=pts.map((_,i)=>(i/(pts.length-1))*W);
+  const ys=pts.map(v=>H-((v-mn)/rng)*(H*.78)-H*.1);
+  const d=xs.map((x,i)=>`${i===0?"M":"L"}${x},${ys[i]}`).join(" ");
+  const gid="g"+color.replace("#","");
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" style="overflow:visible;display:block">
+    <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${color}" stop-opacity=".25"/>
+      <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+    </linearGradient></defs>
+    <path d="${d} L${W},${H} L0,${H}Z" fill="url(#${gid})"/>
+    <path d="${d}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${xs[xs.length-1]}" cy="${ys[ys.length-1]}" r="3.5" fill="${color}" stroke="#0a1628" stroke-width="2"/>
+  </svg>`;
+}
+
+function fetchData(){
+  if(!API_URL||API_URL.includes("PASTE_URL"))return Promise.resolve(getDemoData());
+  return new Promise((resolve)=>{
+    const cbName="cb_"+Date.now();
+    const script=document.createElement("script");
+    const timeout=setTimeout(()=>{
+      delete window[cbName];
+      try{document.body.removeChild(script);}catch(e){}
+      document.getElementById("errorBanner").textContent="⚠️ Timeout — cek URL API dan koneksi.";
+      document.getElementById("errorBanner").style.display="block";
+      resolve(getDemoData());
+    },15000);
+    window[cbName]=function(data){
+      clearTimeout(timeout);
+      delete window[cbName];
+      try{document.body.removeChild(script);}catch(e){}
+      if(data.error){
+        document.getElementById("errorBanner").textContent="⚠️ "+data.error;
+        document.getElementById("errorBanner").style.display="block";
+        resolve(getDemoData());
+      }else{
+        document.getElementById("apiNotice").style.display="none";
+        document.getElementById("errorBanner").style.display="none";
+        resolve(data);
+      }
+    };
+    script.onerror=function(){
+      clearTimeout(timeout);
+      delete window[cbName];
+      document.getElementById("errorBanner").textContent="⚠️ Gagal akses API — cek URL Apps Script.";
+      document.getElementById("errorBanner").style.display="block";
+      resolve(getDemoData());
+    };
+    script.src=API_URL+"?action=home&callback="+cbName+"&t="+Date.now();
+    document.body.appendChild(script);
+  });
+}
+
+function render(data){
+  G=data;
+  const months=data.months.slice(0,data.curMonthIdx+1);
+  const ci=data.curMonthIdx;
+  document.getElementById("periodLabel").textContent="Desk Collection — "+data.curMonth+" 2025";
+  document.getElementById("trendTitle").textContent="Semua Project — Jan s/d "+data.curMonth+" 2025";
+  document.getElementById("lastUpdate").textContent="Update: "+data.updated;
+  document.getElementById("footerText").textContent="DeskCollection Analytics · "+data.updated;
+  document.getElementById("liveStatus").textContent=API_URL.includes("PASTE")?"Demo":"Live";
+
+  const k=data.kpi;
+  document.getElementById("kpiGrid").innerHTML=[
+    {lbl:"Total Akun Semua Project",val:k.totalAkun,color:"#818cf8",
+     sub:`<span style="color:${dColor(k.totalDelta)}">${k.totalDelta>=0?"▲":"▼"} ${Math.abs(k.totalDelta)} akun</span>`},
+    {lbl:"Total Payment Bulan Ini",val:k.totalPayment,color:"#10b981",sub:""},
+    {lbl:"Jumlah Project Aktif",val:k.totalProjects,color:"#0ea5e9",sub:""},
+    {lbl:"Perubahan vs Bulan Lalu",val:(k.totalDelta>=0?"+":"")+k.totalDelta,color:dColor(k.totalDelta),sub:""},
+  ].map(x=>`<div class="kpi-card">
+    <div class="kpi-label">${x.lbl}</div>
+    <div class="kpi-val" style="color:${x.color}">${x.val}</div>
+    ${x.sub?`<div class="kpi-delta">${x.sub}</div>`:""}
+  </div>`).join("");
+
+  document.getElementById("legend").innerHTML=data.projects.map(p=>
+    `<div class="legend-item"><div class="legend-dot" style="background:${p.color}"></div>${p.name}</div>`).join("");
+
+  const maxA=Math.max(...data.projects.map(p=>Math.max(...p.monthlyAkun.slice(0,ci+1).filter(v=>v>0),1)));
+  document.getElementById("trendChart").innerHTML=data.projects.map(p=>{
+    const bars=p.monthlyAkun.slice(0,ci+1).map((v,mi)=>{
+      if(!v)return`<div class="bar-wrap"><div class="bar" style="height:4px;background:#1e293b"></div><div class="bar-lbl">${months[mi]||""}</div></div>`;
+      const d=delta(p.monthlyAkun,mi);
+      const bg=mi===ci?p.color:d>0?"#22c55e88":d<0?"#ef444488":p.color+"55";
+      return`<div class="bar-wrap" title="${months[mi]}: ${v}${d?" ("+dStr(d)+")":""}">
+        <div class="bar" style="height:${Math.max(8,(v/maxA)*100)}%;background:${bg}"></div>
+        <div class="bar-lbl">${months[mi]||""}</div>
+      </div>`;
+    }).join("");
+    return`<div class="trend-row">
+      <div class="trend-name" style="color:${p.color}">${p.name}</div>
+      <div class="bars">${bars}</div>
+      <div class="cur-val" style="color:${p.color}">${p.monthlyAkun[ci]||0}</div>
+    </div>`;
+  }).join("");
+
+  document.getElementById("projectGrid").innerHTML=data.projects.map(p=>{
+    const cur=p.monthlyAkun[ci]||0;
+    const d=cur-(p.monthlyAkun[ci-1]||0);
+    const pct=p.monthlyAkun[ci-1]?((d/p.monthlyAkun[ci-1])*100).toFixed(1):0;
+    return`<div class="proj-card" onclick="showModal('${p.id}')">
+      <div class="proj-top">
+        <div>
+          <div class="proj-meta"><div class="proj-dot" style="background:${p.color}"></div>SPV ${p.spv}</div>
+          <div class="proj-name" style="color:#fff">${p.name}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+          <div class="rank-badge" style="background:${p.color}22;color:${p.color}">${p.buckets.length} bucket</div>
+          <div style="font-size:10px;font-weight:600;color:${dColor(d)}">${d>0?"▲":d<0?"▼":"—"} ${d!==0?Math.abs(d)+" ("+Math.abs(pct)+"%)":""}</div>
+        </div>
+      </div>
+      <div class="akun-num" style="color:#fff">${cur}</div>
+      <div class="akun-sub">akun aktif bulan ini</div>
+      <div class="sparkline-wrap">${sparkSVG(p.monthlyAkun,p.color,ci)}</div>
+      <div class="proj-stats">
+        <div><div class="stat-label">Payment</div><div class="stat-val">${p.payment}</div></div>
+        <div><div class="stat-label">Rate</div><div class="stat-val" style="color:${p.color}">${p.rate}</div></div>
+        <div><div class="stat-label">Ref Akun</div><div class="stat-val">${p.akunRef||cur}</div></div>
+      </div>
+    </div>`;
+  }).join("");
+
+  let html=`<thead><tr><th style="text-align:left">Project</th>${months.map(m=>`<th>${m}</th>`).join("")}<th>±</th></tr></thead><tbody>`;
+  data.projects.forEach(p=>{
+    const d=p.delta;
+    html+=`<tr onclick="showModal('${p.id}')">
+      <td><div style="display:flex;align-items:center;gap:8px">
+        <div style="width:8px;height:8px;border-radius:50%;background:${p.color};flex-shrink:0"></div>
+        <span style="font-weight:600;color:#e2e8f0">${p.name}</span>
+      </div></td>
+      ${p.monthlyAkun.slice(0,ci+1).map((v,mi)=>{
+        const dm=delta(p.monthlyAkun,mi);
+        return`<td style="color:${mi===ci?p.color:dm>0?"#4ade80":dm<0?"#f87171":"#475569"};font-weight:${mi===ci?"900":"400"}">${v||"-"}</td>`;
+      }).join("")}
+      <td style="color:${dColor(d)};font-weight:700">${dStr(d)||"—"}</td>
+    </tr>`;
+  });
+  const tots=months.map((_,mi)=>data.projects.reduce((s,p)=>s+(p.monthlyAkun[mi]||0),0));
+  const td=tots[ci]-(tots[ci-1]||0);
+  html+=`<tr class="total-row"><td style="color:#a78bfa">TOTAL</td>${tots.map((t,mi)=>`<td style="color:${mi===ci?"#a78bfa":"#e2e8f0"}">${t}</td>`).join("")}<td style="color:${dColor(td)}">${td>0?"+":""}${td}</td></tr></tbody>`;
+  document.getElementById("mainTable").innerHTML=html;
+}
+
+function showModal(id){
+  if(!G)return;
+  const p=G.projects.find(x=>x.id===id);
+  if(!p)return;
+  const ci=G.curMonthIdx;
+  const months=G.months.slice(0,ci+1);
+  const mx=Math.max(...p.monthlyAkun.slice(0,ci+1).filter(v=>v>0))||1;
+  const mn=Math.min(...p.monthlyAkun.slice(0,ci+1).filter(v=>v>0))||0;
+  const rng=mx-mn||1;
+  const bars=p.monthlyAkun.slice(0,ci+1).map((v,mi)=>{
+    if(!v)return"";
+    const d=delta(p.monthlyAkun,mi);
+    const bg=mi===ci?p.color:d>0?"#22c55e88":d<0?"#ef444488":"#33333388";
+    const h=Math.max(10,((v-mn+1)/(rng+1))*100);
+    return`<div class="detail-bar-wrap">
+      <div class="detail-bar-val" style="color:${mi===ci?p.color:dColor(d)}">${v}</div>
+      <div class="detail-bar" style="height:${h}%;background:${bg}"></div>
+      <div class="detail-bar-month">${months[mi]||""}</div>
+      ${d?`<div style="font-size:9px;color:${dColor(d)};margin-top:1px">${dStr(d)}</div>`:""}
+    </div>`;
+  }).join("");
+  document.getElementById("modalContent").innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px">
+      <div>
+        <div style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Detail Project</div>
+        <div style="font-size:24px;font-weight:900;color:#fff;margin-bottom:4px">${p.name}</div>
+        <div style="font-size:12px;color:#64748b">SPV: ${p.spv}</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div style="margin-bottom:20px">
+      <div style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px">Tren Akun Jan — ${G.curMonth}</div>
+      <div class="detail-bars">${bars}</div>
+    </div>
+    <div>
+      <div style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Daftar Bucket (${p.buckets.length})</div>
+      <div>${p.buckets.map(b=>`<span class="bucket-tag" style="background:${p.color}22;color:${p.color}">${b}</span>`).join("")}</div>
+    </div>
+    <div class="modal-stats">
+      <div class="modal-stat" style="background:${p.color}11"><div class="modal-stat-label">Total Akun</div><div class="modal-stat-val" style="color:${p.color}">${p.monthlyAkun[ci]||0}</div></div>
+      <div class="modal-stat" style="background:${p.color}11"><div class="modal-stat-label">Payment</div><div class="modal-stat-val" style="color:${p.color}">${p.payment}</div></div>
+      <div class="modal-stat" style="background:${p.color}11"><div class="modal-stat-label">Rate</div><div class="modal-stat-val" style="color:${p.color}">${p.rate}</div></div>
+    </div>`;
+  document.getElementById("modalOverlay").style.display="flex";
+}
+
+function closeModal(){document.getElementById("modalOverlay").style.display="none";}
+
+function getDemoData(){
+  return{updated:"Demo Mode — API belum terhubung",curMonth:"Juli",curMonthIdx:6,
+    months:["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"],
+    kpi:{totalAkun:451,totalDelta:53,totalPayment:"Rp 2,7 M",totalProjects:5},
+    projects:[
+      {id:"kredione",name:"Kredione",spv:"Maman",color:"#6366f1",buckets:["s1-3 old","S2","M1+","M2+","M3+","M4+"],monthlyAkun:[109,109,109,109,109,109,54,0,0,0,0,0],delta:-55,payment:"Rp 248 jt",rate:"4.8%",akunRef:54},
+      {id:"pinjamin",name:"Pinjamin",spv:"Rizky",color:"#0ea5e9",buckets:["A1-1'","A1-3'","B1'","B2'","M2''","M3''","M4''"],monthlyAkun:[55,55,55,55,55,55,60,0,0,0,0,0],delta:5,payment:"Rp 312 jt",rate:"5.2%",akunRef:60},
+      {id:"rupiah-cepat",name:"Rupiah Cepat",spv:"Lalu Rian",color:"#10b981",buckets:["C03","NPA"],monthlyAkun:[100,100,100,100,100,100,100,0,0,0,0,0],delta:0,payment:"Rp 890 jt",rate:"6.1%",akunRef:100},
+      {id:"kredit-ok",name:"Kredit OK",spv:"Rizky",color:"#f59e0b",buckets:["S1","S2","S3","M2+"],monthlyAkun:[2,2,2,2,2,2,10,0,0,0,0,0],delta:8,payment:"Rp 42 jt",rate:"3.2%",akunRef:10},
+      {id:"gopin",name:"Gopin",spv:"Nurul",color:"#ec4899",buckets:["S1-1 HC","S1-1 gopay pinjam","S1-2 gopay pinjam","S2 gopay pinjam","M1 TTPL HC","M1 TTPL BAU","M2 TTPL","MGR M2+ FV","MGR M3+ FV","MGR M4+ FV","MGR M5+ FV","MAB M2+ GPL FV","MAB M2+ TTPL FV"],monthlyAkun:[115,115,115,115,115,115,127,0,0,0,0,0],delta:12,payment:"Rp 1,2 M",rate:"7.8%",akunRef:127},
+    ]};
+}
+
+function init(){
+  fetchData().then(function(data){
+    render(data);
+  });
+}
+document.addEventListener("DOMContentLoaded",init);
+</script>
+</body>
+</html>
