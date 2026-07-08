@@ -19,7 +19,7 @@ body{background:#F5F4F0;color:#1A2B5E;font-family:system-ui,sans-serif;min-heigh
   --teal:#0F766E;--teal-l:#CCFBF1;--teal-t:#134E4A;
   --bd:#E4E2DA;--bd2:#C9C6BC;
   --s0:#F5F4F0;--s1:#FAFAF7;--s2:#FFFFFE;
-  --txt:#1A2340;--txt2:#4A4840;--txt3:#9A9688;
+  --txt:#1A2340;--txt2:#2A3550;--txt3:#5A5650;
   --sw:220px;--th:48px;--ac:var(--navy);--rad:10px
 }
 
@@ -38,16 +38,16 @@ body{background:#F5F4F0;color:#1A2B5E;font-family:system-ui,sans-serif;min-heigh
 .sidebar{position:fixed;top:var(--th);left:0;width:var(--sw);height:calc(100vh - var(--th));background:var(--s2);border-right:1px solid var(--bd);overflow-y:auto;z-index:90;padding:10px 0}
 .sidebar::-webkit-scrollbar{width:3px}
 .sidebar::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
-.ni{display:flex;align-items:center;gap:9px;padding:8px 15px;font-size:11.5px;font-weight:500;color:var(--txt2);cursor:pointer;border-left:2.5px solid transparent;transition:all .15s}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 15px;font-size:11.5px;font-weight:500;color:#3A4560;cursor:pointer;border-left:2.5px solid transparent;transition:all .15s}
 .ni:hover{color:var(--navy);background:var(--navy3)}
 .ni.on{color:var(--navy);background:var(--navy3);border-left-color:var(--navy);font-weight:600}
-.ni-ic{font-size:14px;flex-shrink:0;width:16px;text-align:center;color:var(--txt3)}
+.ni-ic{font-size:14px;flex-shrink:0;width:16px;text-align:center;color:#5A5650}
 .ni.on .ni-ic{color:var(--navy)}
-.ns{padding:10px 15px 4px;font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.1em;font-weight:600}
+.ns{padding:10px 15px 4px;font-size:9px;color:#5A5650;text-transform:uppercase;letter-spacing:.1em;font-weight:600}
 .ndiv{height:1px;background:var(--bd);margin:6px 12px}
 .fp{padding:8px 12px;display:none}
 .fp.show{display:block}
-.fl{font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;font-weight:600;margin-top:8px}
+.fl{font-size:10px;color:#2A3550;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;font-weight:600;margin-top:8px}
 .fl:first-child{margin-top:0}
 .fs{width:100%;background:var(--s1);border:1px solid var(--bd);color:var(--txt);font-size:11px;padding:5px 8px;border-radius:6px;outline:none;cursor:pointer}
 .fs:focus{border-color:var(--navy)}
@@ -55,17 +55,17 @@ body{background:#F5F4F0;color:#1A2B5E;font-family:system-ui,sans-serif;min-heigh
 .btn-a:hover{background:var(--navy2)}
 .btn-r{width:100%;padding:6px;background:transparent;color:var(--txt2);border:1px solid var(--bd);border-radius:6px;font-size:11px;cursor:pointer;margin-top:4px}
 .btn-r:hover{background:var(--navy3)}
-.dn{font-size:9px;color:var(--txt3);margin:4px 0}
+.dn{font-size:9px;color:#5A5650;margin:4px 0}
 .dg{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:3px}
-.dc{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:8px;border-radius:3px;cursor:pointer;color:var(--txt3)}
+.dc{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:8px;border-radius:3px;cursor:pointer;color:#5A5650}
 .dc:hover{background:var(--navy3);color:var(--navy)}
 .dc.dtoday{background:var(--navy3);color:var(--navy);font-weight:700}
 .dc.dsel{background:var(--navy);color:#fff}
 .dc.drng{background:var(--navy3);color:var(--navy2)}
-.dc.dhdr{cursor:default;color:var(--bd2);font-weight:600}
+.dc.dhdr{cursor:default;color:var(--txt2);font-weight:600}
 .dnav{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
 .dnav span{font-size:10px;font-weight:600;color:var(--txt)}
-.dnav button{background:none;border:none;color:var(--txt3);cursor:pointer;font-size:12px;padding:1px 4px;border-radius:3px}
+.dnav button{background:none;border:none;color:#5A5650;cursor:pointer;font-size:12px;padding:1px 4px;border-radius:3px}
 .dnav button:hover{color:var(--navy);background:var(--navy3)}
 
 /* ── MAIN CONTENT ────────────────────────────────────────────────── */
@@ -74,19 +74,19 @@ body{background:#F5F4F0;color:#1A2B5E;font-family:system-ui,sans-serif;min-heigh
 .pg.on{display:block}
 .ey{font-size:10px;color:var(--navy2);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:5px}
 .pt{font-size:24px;font-weight:700;color:var(--navy);line-height:1.1;margin-bottom:5px}
-.pd{font-size:12px;color:var(--txt2);max-width:480px;line-height:1.6;margin-bottom:20px}
+.pd{font-size:12px;color:#3A4560;max-width:480px;line-height:1.6;margin-bottom:20px}
 
 /* ── KPI CARDS ───────────────────────────────────────────────────── */
 .kg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
 @media(max-width:880px){.kg{grid-template-columns:repeat(2,1fr)}}
 .kc{background:var(--s2);border:1px solid var(--bd);border-radius:var(--rad);padding:14px 16px;border-top:3px solid var(--bd)}
-.kl{font-size:10px;color:var(--txt2);margin-bottom:6px;line-height:1.4;font-weight:500}
+.kl{font-size:10px;color:#3A4560;margin-bottom:6px;line-height:1.4;font-weight:500}
 .kv{font-size:20px;font-weight:700;line-height:1;color:var(--navy)}
 .kd{font-size:10px;margin-top:4px;font-weight:600}
 
 /* ── SECTION CARD ────────────────────────────────────────────────── */
 .sc{background:var(--s2);border:1px solid var(--bd);border-radius:var(--rad);padding:16px 18px;margin-bottom:14px}
-.sey{font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;font-weight:600}
+.sey{font-size:9px;color:#5A5650;text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;font-weight:600}
 .st{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px}
 .leg{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .li{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--txt2)}
@@ -96,7 +96,7 @@ body{background:#F5F4F0;color:#1A2B5E;font-family:system-ui,sans-serif;min-heigh
 .bs{display:flex;gap:4px;align-items:flex-end;height:30px;flex:1}
 .bw{display:flex;flex-direction:column;align-items:center;flex:1;height:100%}
 .bar{width:100%;border-radius:2px;transition:height .4s}
-.bl{font-size:7px;color:var(--txt3);margin-top:2px}
+.bl{font-size:7px;color:#5A5650;margin-top:2px}
 .cv{font-size:10px;font-weight:700;flex-shrink:0;width:28px;text-align:right}
 
 /* ── PROJECT CARDS ───────────────────────────────────────────────── */
@@ -106,14 +106,14 @@ body{background:#F5F4F0;color:#1A2B5E;font-family:system-ui,sans-serif;min-heigh
 .pc{background:var(--s2);border:1px solid var(--bd);border-radius:var(--rad);padding:16px;cursor:pointer;transition:all .2s;border-top:3px solid var(--bd)}
 .pc:hover{box-shadow:0 4px 16px rgba(26,43,94,.08);transform:translateY(-1px)}
 .ptop{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
-.pm{font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;display:flex;align-items:center;gap:4px;font-weight:500}
+.pm{font-size:9px;color:#5A5650;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;display:flex;align-items:center;gap:4px;font-weight:500}
 .pdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 .pn{font-size:14px;font-weight:700;color:var(--navy)}
 .akun-num{font-size:34px;font-weight:700;line-height:1;margin-bottom:2px}
-.akun-sub{font-size:10px;color:var(--txt3)}
+.akun-sub{font-size:10px;color:#5A5650}
 .sw{margin:10px -2px;height:38px}
 .pst{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding-top:10px;border-top:1px solid var(--bd)}
-.sl{font-size:9px;color:var(--txt3);margin-bottom:1px;font-weight:500}
+.sl{font-size:9px;color:#5A5650;margin-bottom:1px;font-weight:500}
 .sv{font-size:11px;font-weight:600;color:var(--txt2)}
 .bdg{font-size:9px;padding:2px 7px;border-radius:20px;font-weight:600}
 
@@ -121,7 +121,7 @@ body{background:#F5F4F0;color:#1A2B5E;font-family:system-ui,sans-serif;min-heigh
 .tw{background:var(--s2);border:1px solid var(--bd);border-radius:var(--rad);overflow:hidden;margin-bottom:14px}
 .th2{padding:13px 18px;border-bottom:1px solid var(--bd);background:var(--s1)}
 table{width:100%;border-collapse:collapse;font-size:11px}
-th{text-align:center;padding:9px 10px;color:var(--txt2);font-size:9px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;border-bottom:1px solid var(--bd);white-space:nowrap;background:var(--s1)}
+th{text-align:center;padding:9px 10px;color:#2A3550;font-size:9px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;border-bottom:1px solid var(--bd);white-space:nowrap;background:var(--s1)}
 th.tl{text-align:left;padding-left:18px}
 td{padding:8px 10px;border-bottom:1px solid var(--bd);text-align:center;white-space:nowrap;color:var(--txt)}
 td.tl{text-align:left;padding-left:18px}
@@ -136,23 +136,23 @@ tr:hover td{background:var(--navy3);cursor:pointer}
 .wr{display:grid;grid-template-columns:auto 1fr auto;gap:7px;align-items:center;padding:6px 14px;border-bottom:1px solid var(--bd);font-size:10px}
 .wr:last-child{border-bottom:none}
 .wrk{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0}
-.wn{font-size:10px;color:var(--txt);overflow:hidden;text-overflow:ellipsis}
-.wp{font-size:10px;font-weight:600;color:var(--txt2);text-align:right}
+.wn{font-size:10px;color:var(--navy);overflow:hidden;text-overflow:ellipsis}
+.wp{font-size:10px;font-weight:600;color:#2A3550;text-align:right}
 
 /* ── CHART BUILDER ───────────────────────────────────────────────── */
 .cb{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:780px){.cb{grid-template-columns:1fr}}
 .cs{background:var(--s2);border:1px dashed var(--bd2);border-radius:var(--rad);padding:14px;min-height:260px}
-.cs.has{border-style:solid;border-color:var(--bd)}
+.cs.has{border-style:solid;border-color:var(--txt2)}
 .csh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .ctt{display:flex;gap:3px;margin-bottom:10px;flex-wrap:wrap}
 .ct{padding:4px 10px;font-size:10px;border-radius:5px;cursor:pointer;border:1px solid var(--bd);color:var(--txt2);background:var(--s1)}
 .ct.on{background:var(--navy);color:#fff;border-color:var(--navy)}
 .mg2{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;margin-bottom:10px;max-height:220px;overflow-y:auto}
 .mi{display:flex;align-items:center;gap:5px;padding:5px 8px;border-radius:6px;cursor:pointer;border:1px solid var(--bd);font-size:10px;color:var(--txt2);background:var(--s1);transition:all .15s}
-.mi:hover{border-color:var(--bd2);color:var(--navy)}
+.mi:hover{border-color:var(--txt2);color:var(--navy)}
 .mi.on{border-color:var(--navy);background:var(--navy3);color:var(--navy);font-weight:600}
-.cp{background:var(--s0);border-radius:7px;height:130px;display:flex;align-items:center;justify-content:center;color:var(--txt3);font-size:11px;overflow:hidden;border:1px solid var(--bd)}
+.cp{background:var(--s0);border-radius:7px;height:130px;display:flex;align-items:center;justify-content:center;color:#5A5650;font-size:11px;overflow:hidden;border:1px solid var(--bd)}
 .acb{width:100%;padding:9px;background:var(--navy3);border:1px dashed var(--bd2);color:var(--navy);border-radius:7px;cursor:pointer;font-size:11px;font-weight:600;margin-top:8px}
 .acb:hover{background:var(--bd)}
 
@@ -160,21 +160,21 @@ tr:hover td{background:var(--navy3);cursor:pointer}
 .mo{position:fixed;inset:0;background:rgba(26,43,94,.35);z-index:200;display:none;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(4px)}
 .mo.on{display:flex}
 .md{background:var(--s2);border-radius:16px;padding:24px;width:100%;max-width:560px;max-height:88vh;overflow-y:auto;border:1px solid var(--bd);box-shadow:0 20px 60px rgba(26,43,94,.15)}
-.mc{color:var(--txt3);font-size:20px;cursor:pointer;background:none;border:none;line-height:1}
+.mc{color:#5A5650;font-size:20px;cursor:pointer;background:none;border:none;line-height:1}
 .mc:hover{color:var(--navy)}
 .btag{font-size:10px;padding:3px 8px;border-radius:20px;font-weight:500;display:inline-block;margin:2px;background:var(--navy3);color:var(--navy2)}
 .ms{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:14px;padding-top:14px;border-top:1px solid var(--bd)}
 .msc{border-radius:9px;padding:10px;background:var(--s1)}
-.msl{font-size:9px;color:var(--txt3);margin-bottom:3px;font-weight:500}
+.msl{font-size:9px;color:#5A5650;margin-bottom:3px;font-weight:500}
 .msv{font-size:15px;font-weight:700;color:var(--navy)}
 
 /* ── MISC ────────────────────────────────────────────────────────── */
 .err{background:var(--red-l);border:1px solid #FECACA;border-radius:9px;padding:11px 15px;margin-bottom:14px;font-size:12px;color:var(--red);display:none}
-.ft{text-align:center;font-size:10px;color:var(--txt3);padding:14px 0}
+.ft{text-align:center;font-size:10px;color:#5A5650;padding:14px 0}
 @keyframes shimmer{0%{opacity:.4}50%{opacity:1}100%{opacity:.4}}
 .skel{height:14px;background:var(--bd);border-radius:4px;animation:shimmer 1.2s ease infinite}
 .skel-card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--rad);padding:14px}
-.emt{text-align:center;padding:30px;color:var(--txt3);font-size:12px}
+.emt{text-align:center;padding:30px;color:#5A5650;font-size:12px}
 .sidebar::-webkit-scrollbar{width:3px}
 .sidebar::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
 .main::-webkit-scrollbar{width:4px}
@@ -205,7 +205,7 @@ tr:hover td{background:var(--navy3);cursor:pointer}
   <div class="ndiv"></div>
   <div class="ns">Nama Aplikasi</div>
   <div id="nAppList">
-    <div class="ni" id="nAppAll" onclick="navApp('all')" style="border-left-color:transparent"><span class="ni-ic" style="color:#64748b">●</span><span style="font-size:11px">Semua Aplikasi</span></div>
+    <div class="ni" id="nAppAll" onclick="navApp('all')" style="border-left-color:transparent"><span class="ni-ic" style="color:#4A4840">●</span><span style="font-size:11px">Semua Aplikasi</span></div>
     <div class="ni" id="nAppKredione" onclick="navApp('Kredione')" style="border-left-color:transparent"><span class="ni-ic" style="color:#6366f1">●</span><span style="font-size:11px">Kredione</span></div>
     <div class="ni" id="nAppPinjamin" onclick="navApp('Pinjamin')" style="border-left-color:transparent"><span class="ni-ic" style="color:#0ea5e9">●</span><span style="font-size:11px">Pinjamin</span></div>
     <div class="ni" id="nAppRupiah Cepat" onclick="navApp('Rupiah Cepat')" style="border-left-color:transparent"><span class="ni-ic" style="color:#10b981">●</span><span style="font-size:11px">Rupiah Cepat</span></div>
@@ -214,6 +214,16 @@ tr:hover td{background:var(--navy3);cursor:pointer}
   </div>
   <div class="ndiv" id="nd1"></div>
   <div class="fp" id="fPanel">
+    <div class="fl" id="fAppLabel" style="display:none">Aplikasi</div>
+    <select class="fs" id="fApp" style="display:none" onchange="applyF()">
+      <option value="">Semua</option>
+      <option value="Kredione">Kredione</option>
+      <option value="Pinjamin">Pinjamin</option>
+      <option value="Rupiah Cepat">Rupiah Cepat</option>
+      <option value="Kredit OK">Kredit OK</option>
+      <option value="Gopin Nurul">Gopin Nurul</option>
+      <option value="Gopin Nandalika">Gopin Nandalika</option>
+    </select>
     <div class="fl">Tahun</div>
     <select class="fs" id="fY"><option value="">Semua</option><option value="2025" selected>2025</option><option value="2026">2026</option></select>
     <div class="fl">Bulan</div>
@@ -243,7 +253,7 @@ tr:hover td{background:var(--navy3);cursor:pointer}
   <div class="ns">Panduan Operasional</div>
   <div class="ni" id="nFlowMenu" onclick="togFlowMenu()" style="justify-content:space-between">
     <div style="display:flex;align-items:center;gap:9px"><span class="ni-ic">📋</span>Flow Kerja</div>
-    <span id="flowArrow" style="font-size:10px;color:var(--txt3);transition:transform .2s">▾</span>
+    <span id="flowArrow" style="font-size:10px;color:#5A5650;transition:transform .2s">▾</span>
   </div>
   <div id="flowSubmenu" style="display:none">
     <div class="ni" id="nFlowTL" onclick="nav('flowTL')" style="padding-left:28px;font-size:11px">
@@ -271,7 +281,7 @@ tr:hover td{background:var(--navy3);cursor:pointer}
       </div>
       <div id="hTrend"></div>
     </div>
-    <div style="font-size:10px;color:var(--mt);text-transform:uppercase;letter-spacing:.1em;margin-bottom:11px">Detail Per Project</div>
+    <div style="font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:11px">Detail Per Project</div>
     <div class="pg2" id="hCards"></div>
     <div class="tw">
       <div class="th2"><div class="sey">Ringkasan</div><div class="st" style="margin-bottom:0">Tabel Akun per Bulan</div></div>
@@ -400,7 +410,7 @@ function h(tag,attr,inner){
 // Spark SVG - pure string concat, no template literals
 function spark(data,color,ci){
   const pts=data.slice(0,ci+1).filter(function(v){return v>0;});
-  if(pts.length<2)return h('div',{style:'height:38px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#334155'},'No data');
+  if(pts.length<2)return h('div',{style:'height:38px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#3A3830'},'No data');
   var W=120,H=38;
   var mn=Math.min.apply(null,pts),mx=Math.max.apply(null,pts),rng=mx-mn||1;
   var xs=pts.map(function(_,i){return (i/(pts.length-1))*W;});
@@ -493,6 +503,14 @@ function nav(pg,app){
 }
 
 function updSbar(pg,app){
+  // Show/hide aplikasi filter for ACR page
+  var fAppLbl=el('fAppLabel');
+  var fApp=el('fApp');
+  if(fAppLbl&&fApp){
+    var showAppFilter=pg==='weekly';
+    fAppLbl.style.display=showAppFilter?'block':'none';
+    fApp.style.display=showAppFilter?'block':'none';
+  }
   // App list always visible - just highlight active
   var allApps=['all','Kredione','Pinjamin','Rupiah Cepat','Kredit OK','Gopin'];
   allApps.forEach(function(a){
@@ -570,13 +588,14 @@ function selDate(ds){
 function applyF(){
   F.y=el('fY').value;F.m=el('fM').value;
   F.b=el('fB').value;F.tl=el('fTL').value;F.ag=el('fAg').value;
+  F.app=el('fApp')?el('fApp').value:'';
   if(curPg==='app'&&curApp)renderApp(curApp);
   else if(curPg==='weekly')renderWeekly();
-  else if(curPg==='monthly')renderMonthly();
 }
 function resetF(){
-  F={y:'2025',m:'Juli',b:'',tl:'',ag:'',d1:null,d2:null};
+  F={y:'2025',m:'Juli',b:'',tl:'',ag:'',app:'',d1:null,d2:null};
   ['fY','fM','fB','fTL','fAg'].forEach(function(id){el(id).value=id==='fY'?'2025':id==='fM'?'Juli':'';});
+  if(el('fApp'))el('fApp').value='';
   renderCal();applyF();
 }
 
@@ -687,8 +706,8 @@ function renderApp(app){
       +'<div style="display:flex;align-items:center;gap:4px;background:#080e1a;border:1px solid var(--bd);border-radius:6px;padding:4px 8px;cursor:pointer" onclick="togAppChart(\''+app+'\',\''+key+'\',\'labels\')"><div style="width:24px;height:14px;border-radius:20px;background:'+(sl?'var(--ac)':'#1e293b')+';position:relative"><div style="position:absolute;top:2px;left:'+(sl?'12':'2')+'px;width:10px;height:10px;border-radius:50%;background:#fff"></div></div><span style="font-size:9px;color:#e2e8f0">Angka</span></div>'
       // Mode toggle
       +'<div style="display:flex;background:#080e1a;border:1px solid var(--bd);border-radius:6px;overflow:hidden">'
-      +'<div onclick="togAppChart(\''+app+'\',\''+key+'\',\'sum\')" style="padding:4px 9px;font-size:9px;font-weight:600;cursor:pointer;'+( sm==='sum'?'background:var(--ac);color:#fff':'color:var(--mt)')+'">Jumlah</div>'
-      +'<div onclick="togAppChart(\''+app+'\',\''+key+'\',\'avg\')" style="padding:4px 9px;font-size:9px;font-weight:600;cursor:pointer;'+(sm==='avg'?'background:var(--ac);color:#fff':'color:var(--mt)')+'">Rata-rata</div>'
+      +'<div onclick="togAppChart(\''+app+'\',\''+key+'\',\'sum\')" style="padding:4px 9px;font-size:9px;font-weight:600;cursor:pointer;'+( sm==='sum'?'background:var(--ac);color:#fff':'color:var(--txt2)')+'">Jumlah</div>'
+      +'<div onclick="togAppChart(\''+app+'\',\''+key+'\',\'avg\')" style="padding:4px 9px;font-size:9px;font-weight:600;cursor:pointer;'+(sm==='avg'?'background:var(--ac);color:#fff':'color:var(--txt2)')+'">Rata-rata</div>'
       +'</div></div></div>';
   }
 
@@ -901,7 +920,7 @@ function renderApp(app){
       +'<div class="st" style="margin-bottom:0">Jan s/d '+G.curMonth+' — '+bktNames.length+' Bucket</div></div>'
       +'<div style="display:flex;gap:6px;flex-wrap:wrap">'+bktNames.map(function(bkt,bi){
         var bc=bktColors[bi%bktColors.length];
-        return '<div style="display:flex;align-items:center;gap:3px;font-size:9px;color:#94a3b8">'
+        return '<div style="display:flex;align-items:center;gap:3px;font-size:9px;color:#4A4840">'
           +'<div style="width:6px;height:6px;border-radius:2px;background:'+bc+'"></div>'+bkt+'</div>';
       }).join('')+'</div></div>'
       +bktTrendRows+'</div>';
@@ -914,7 +933,7 @@ function renderApp(app){
     +'<div style="font-size:12px;color:#e2e8f0;line-height:1.7;margin-bottom:14px">'+analisa.join(' ')+'</div>'
 
     // Kendala
-    +'<div style="font-size:10px;color:var(--mt);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:8px">Kendala Terdeteksi</div>'
+    +'<div style="font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:8px">Kendala Terdeteksi</div>'
     +kendala.map(function(k){
       var kc=k.level==='high'?'#ef4444':k.level==='med'?'#f59e0b':'#10b981';
       var kb=k.level==='high'?'rgba(239,68,68,.1)':k.level==='med'?'rgba(245,158,11,.1)':'rgba(16,185,129,.1)';
@@ -939,9 +958,9 @@ function renderApp(app){
       var prev=wk>1?demoAgents.reduce(function(s,a){return s+(a['w'+(wk-1)]||0);},0):totWk;
       var dwk=totWk-prev;
       return '<div style="background:var(--s2);border-radius:8px;padding:9px;text-align:center">'
-        +'<div style="font-size:9px;color:var(--mt);margin-bottom:3px">Week '+wk+'</div>'
+        +'<div style="font-size:9px;color:var(--txt2);margin-bottom:3px">Week '+wk+'</div>'
         +'<div style="font-size:13px;font-weight:700;color:'+color+'">'+fRp(totWk)+'</div>'
-        +(wk>1?'<div style="font-size:9px;color:'+dc(dwk)+'">'+( dwk>=0?'+':'')+fRp(Math.abs(dwk))+'</div>':'<div style="font-size:9px;color:var(--mt)">baseline</div>')
+        +(wk>1?'<div style="font-size:9px;color:'+dc(dwk)+'">'+( dwk>=0?'+':'')+fRp(Math.abs(dwk))+'</div>':'<div style="font-size:9px;color:var(--txt2)">baseline</div>')
         +'</div>';
     }).join('')
     +'</div></div>';
@@ -951,7 +970,7 @@ function renderApp(app){
     +'<div class="sey" style="color:#f87171">Agent Perlu Perhatian</div>'
     +'<div class="st" style="display:flex;justify-content:space-between;align-items:center">'
     +'<span>Identifikasi Otomatis berdasarkan Scoring</span>'
-    +'<span style="font-size:10px;color:var(--mt)">'+badAgents.length+' dari '+demoAgents.length+' agent</span></div>'
+    +'<span style="font-size:10px;color:var(--txt2)">'+badAgents.length+' dari '+demoAgents.length+' agent</span></div>'
     +(badAgents.length===0?'<div class="emt" style="color:#4ade80">✓ Semua agent dalam kondisi baik</div>':'')
     +badAgents.map(function(a){
       var catColor=a.cat==='Buruk'?'var(--red)':'var(--amber)';
@@ -962,14 +981,14 @@ function renderApp(app){
         +'<div style="width:30px;height:30px;border-radius:50%;background:'+catBg+';border:1px solid '+catColor+';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:'+catColor+';flex-shrink:0">'
         +a.name.split(' ').map(function(x){return x[0];}).join('').substring(0,2)+'</div>'
         +'<div><div style="font-size:12px;font-weight:600;color:#e2e8f0">'+a.name+'</div>'
-        +'<div style="font-size:10px;color:var(--mt)">'+a.akun+'</div></div></div>'
+        +'<div style="font-size:10px;color:var(--txt2)">'+a.akun+'</div></div></div>'
         +'<span class="bdg" style="background:'+catBg+';color:'+catColor+'">'+a.cat+'</span></div>'
         +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px">'
-        +'<div style="background:rgba(0,0,0,.2);border-radius:6px;padding:6px;text-align:center"><div style="font-size:9px;color:var(--mt)">Total Payment</div><div style="font-size:11px;font-weight:600;color:'+catColor+'">'+fRp(a.total)+'</div></div>'
-        +'<div style="background:rgba(0,0,0,.2);border-radius:6px;padding:6px;text-align:center"><div style="font-size:9px;color:var(--mt)">WA Blokir</div><div style="font-size:11px;font-weight:600;color:'+(a.wa_blokir>=15?'var(--red)':'var(--amber)')+'">'+a.wa_blokir+'</div></div>'
-        +'<div style="background:rgba(0,0,0,.2);border-radius:6px;padding:6px;text-align:center"><div style="font-size:9px;color:var(--mt)">Conn Rate</div><div style="font-size:11px;font-weight:600;color:'+(a.connRate<0.25?'var(--red)':'var(--amber)')+'">'+Math.round(a.connRate*100)+'%</div></div>'
+        +'<div style="background:rgba(0,0,0,.2);border-radius:6px;padding:6px;text-align:center"><div style="font-size:9px;color:var(--txt2)">Total Payment</div><div style="font-size:11px;font-weight:600;color:'+catColor+'">'+fRp(a.total)+'</div></div>'
+        +'<div style="background:rgba(0,0,0,.2);border-radius:6px;padding:6px;text-align:center"><div style="font-size:9px;color:var(--txt2)">WA Blokir</div><div style="font-size:11px;font-weight:600;color:'+(a.wa_blokir>=15?'var(--red)':'var(--amber)')+'">'+a.wa_blokir+'</div></div>'
+        +'<div style="background:rgba(0,0,0,.2);border-radius:6px;padding:6px;text-align:center"><div style="font-size:9px;color:var(--txt2)">Conn Rate</div><div style="font-size:11px;font-weight:600;color:'+(a.connRate<0.25?'var(--red)':'var(--amber)')+'">'+Math.round(a.connRate*100)+'%</div></div>'
         +'</div>'
-        +'<div style="font-size:10px;color:var(--mt);margin-bottom:4px;font-weight:600">Kendala Terdeteksi:</div>'
+        +'<div style="font-size:10px;color:var(--txt2);margin-bottom:4px;font-weight:600">Kendala Terdeteksi:</div>'
         +'<div>'+a.issues.map(function(iss){return '<span style="display:inline-block;background:rgba(239,68,68,.15);color:#fca5a5;font-size:9px;padding:2px 8px;border-radius:20px;margin:2px">'+iss+'</span>';}).join('')+'</div>'
         +'</div>';
     }).join('')
@@ -1035,7 +1054,7 @@ function renderAllApps(){
       +'<div style="font-size:11px;color:'+p.color+';font-weight:700">'+cur+' akun</div></div>'
       +'<div style="background:#1e293b;border-radius:4px;height:7px;overflow:hidden">'
       +'<div style="background:'+p.color+';height:100%;width:'+pct+'%;border-radius:4px;transition:width .4s"></div></div>'
-      +'<div style="display:flex;justify-content:space-between;margin-top:2px;font-size:9px;color:var(--mt)"><span>SPV: '+p.spv+'</span><span>'+p.buckets.length+' bucket</span><span>Rate: '+p.rate+'</span></div>'
+      +'<div style="display:flex;justify-content:space-between;margin-top:2px;font-size:9px;color:var(--txt2)"><span>SPV: '+p.spv+'</span><span>'+p.buckets.length+' bucket</span><span>Rate: '+p.rate+'</span></div>'
       +'</div>';
   }).join('');
 
@@ -1064,7 +1083,7 @@ function renderAllApps(){
 // ── RENDER WEEKLY ──────────────────────────────────────────────────────────
 function renderWeekly(){
   if(!G)return;
-  el('wEy').textContent='ACR — '+(curApp||'Semua')+' / '+(F.m||'Juli');
+  el('wEy').textContent='ACR — '+(F.app||'Semua Aplikasi')+' / '+(curApp||'Semua')+' / '+(F.m||'Juli');
   var ags=[
     {name:'NURUL ISMIATI',akun:'EDN108',w:[119300335,0,0,0]},
     {name:'NURUL ISMIATI',akun:'EDN104',w:[154667229,0,0,0]},
@@ -1085,7 +1104,7 @@ function renderWeekly(){
     if(!wData.length)return '<div class="wc"><div class="wh">WEEK '+wk+'</div><div class="emt">Belum ada data</div></div>';
     return '<div class="wc"><div class="wh">WEEK '+wk+'</div>'+wData.map(function(a,i){
       var r=i+1,rb=r<=3?'#4CAF50':r<=7?'#FFC107':'#F44336',rf=r<=6?'#000':'#fff';
-      return '<div class="wr"><div style="display:flex;align-items:center;gap:5px"><div class="wrk" style="background:'+rb+';color:'+rf+'">'+r+'</div><div><div class="wn">'+a.name+'</div><div style="font-size:8px;color:var(--mt)">'+a.akun+'</div></div></div><div class="wp">'+fRp(a.pay)+'</div></div>';
+      return '<div class="wr"><div style="display:flex;align-items:center;gap:5px"><div class="wrk" style="background:'+rb+';color:'+rf+'">'+r+'</div><div><div class="wn">'+a.name+'</div><div style="font-size:8px;color:var(--txt2)">'+a.akun+'</div></div></div><div class="wp">'+fRp(a.pay)+'</div></div>';
     }).join('')+'</div>';
   }).join('');
 
@@ -1096,7 +1115,7 @@ function renderWeekly(){
     var tot=a.w[0]+a.w[1]+a.w[2]+a.w[3];
     var pct=totAll>0?((tot/totAll)*100).toFixed(1):0;
     var rb=i<3?'#1B6B3A':i<7?'#B45309':'#B91C1C',rf='#fff';
-    return '<tr><td class="tl" style="color:var(--mt)">'+a.akun+'</td><td class="tl" style="font-weight:500;color:#e2e8f0">'+a.name+'</td><td style="color:#10b981;font-weight:600">'+fRp(tot)+'</td>'
+    return '<tr><td class="tl" style="color:var(--txt2)">'+a.akun+'</td><td class="tl" style="font-weight:500;color:#e2e8f0">'+a.name+'</td><td style="color:#10b981;font-weight:600">'+fRp(tot)+'</td>'
       +a.w.map(function(v){return '<td style="color:'+(v?'#4ade80':'var(--mt)')+'">'+fRp(v)+'</td>';}).join('')
       +'<td style="color:#818cf8">'+pct+'%</td><td><div class="wrk" style="background:'+rb+';color:'+rf+';margin:0 auto;width:20px;height:20px;font-size:8px">'+(i+1)+'</div></td></tr>';
   }).join('')+'<tr class="ttr"><td class="tl" colspan="2" style="color:#a78bfa">TOTAL</td><td style="color:#10b981">'+fRp(totAll)+'</td>'
@@ -1131,7 +1150,7 @@ function renderMonthly(){
   var tb='<tbody>'+sorted.map(function(a){
     var pct=totPay>0?((a.total/totPay)*100).toFixed(1):0;
     var rb=a.rank<=3?'#1B6B3A':a.rank<=7?'#B45309':'#B91C1C',rf='#fff';
-    return '<tr><td class="tl" style="font-size:10px;color:var(--mt)">'+a.akun+'</td><td class="tl" style="font-weight:500;color:#e2e8f0">'+a.name+'</td><td style="color:#10b981;font-weight:700">'+fRp(a.total)+'</td>'
+    return '<tr><td class="tl" style="font-size:10px;color:var(--txt2)">'+a.akun+'</td><td class="tl" style="font-weight:500;color:#e2e8f0">'+a.name+'</td><td style="color:#10b981;font-weight:700">'+fRp(a.total)+'</td>'
       +a.w.map(function(v){return '<td style="color:'+(v>0?'#4ade80':'var(--mt)')+'">'+( v>0?fRp(v):'Rp0')+'</td>';}).join('')
       +'<td style="color:#818cf8">'+pct+'%</td>'
       +'<td><div class="wrk" style="background:'+rb+';color:'+rf+';margin:0 auto;width:22px;height:22px;font-size:9px">'+a.rank+'</div></td></tr>';
@@ -1173,13 +1192,13 @@ function renderSlot(s){
   }).join('');
   var metricGrid=METRICS.map(function(m){
     return '<div class="mi'+(s.metrics.indexOf(m.key)>=0?' on':'')+'" onclick="togMetric('+s.id+',\''+m.key+'\')">'
-      +'<span style="font-size:8px;color:var(--mt)">'+m.col+'</span> '+m.lbl+'</div>';
+      +'<span style="font-size:8px;color:var(--txt2)">'+m.col+'</span> '+m.lbl+'</div>';
   }).join('');
 
   // Sesuaikan panel
   var sesuaikan=
     '<div style="background:#080e1a;border:1px solid var(--bd);border-radius:8px;padding:10px;margin-bottom:10px">'
-    +'<div style="font-size:10px;color:var(--mt);margin-bottom:7px;font-weight:600;text-transform:uppercase;letter-spacing:.07em">⚙ Sesuaikan Chart</div>'
+    +'<div style="font-size:10px;color:var(--txt2);margin-bottom:7px;font-weight:600;text-transform:uppercase;letter-spacing:.07em">⚙ Sesuaikan Chart</div>'
     +'<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">'
     // Show/hide labels toggle
     +'<div style="display:flex;align-items:center;gap:6px">'
@@ -1188,20 +1207,20 @@ function renderSlot(s){
     +'<span style="font-size:10px;color:#e2e8f0">Tampilkan Angka</span></div>'
     // Mode selector
     +'<div style="display:flex;gap:3px">'
-    +'<div onclick="setMode('+s.id+',\'sum\')" style="padding:3px 10px;font-size:9px;border-radius:4px;cursor:pointer;font-weight:600;'+(sm==='sum'?'background:var(--ac);color:#fff':'background:#1e293b;color:var(--mt)')+'">Jumlah</div>'
-    +'<div onclick="setMode('+s.id+',\'avg\')" style="padding:3px 10px;font-size:9px;border-radius:4px;cursor:pointer;font-weight:600;'+(sm==='avg'?'background:var(--ac);color:#fff':'background:#1e293b;color:var(--mt)')+'">Rata-rata</div></div>'
+    +'<div onclick="setMode('+s.id+',\'sum\')" style="padding:3px 10px;font-size:9px;border-radius:4px;cursor:pointer;font-weight:600;'+(sm==='sum'?'background:var(--ac);color:#fff':'background:#1e293b;color:var(--txt2)')+'">Jumlah</div>'
+    +'<div onclick="setMode('+s.id+',\'avg\')" style="padding:3px 10px;font-size:9px;border-radius:4px;cursor:pointer;font-weight:600;'+(sm==='avg'?'background:var(--ac);color:#fff':'background:#1e293b;color:var(--txt2)')+'">Rata-rata</div></div>'
     // Mode hint
-    +'<span style="font-size:9px;color:var(--mt)">'+( sm==='avg'?'📊 Tampil rata-rata per agent':'📊 Tampil total keseluruhan')+'</span>'
+    +'<span style="font-size:9px;color:var(--txt2)">'+( sm==='avg'?'📊 Tampil rata-rata per agent':'📊 Tampil total keseluruhan')+'</span>'
     +'</div></div>';
 
   return '<div class="cs has" id="slot'+s.id+'">'
-    +'<div class="csh"><input value="'+s.title+'" onchange="setSlotTitle('+s.id+',this.value)" style="background:transparent;border:none;color:#fff;font-size:12px;font-weight:600;width:200px;outline:none"><button onclick="rmSlot('+s.id+')" style="background:none;border:none;color:var(--mt);cursor:pointer;font-size:17px">×</button></div>'
-    +'<div style="font-size:10px;color:var(--mt);margin-bottom:5px">Tipe Chart</div>'
+    +'<div class="csh"><input value="'+s.title+'" onchange="setSlotTitle('+s.id+',this.value)" style="background:transparent;border:none;color:#fff;font-size:12px;font-weight:600;width:200px;outline:none"><button onclick="rmSlot('+s.id+')" style="background:none;border:none;color:var(--txt2);cursor:pointer;font-size:17px">×</button></div>'
+    +'<div style="font-size:10px;color:var(--txt2);margin-bottom:5px">Tipe Chart</div>'
     +'<div class="ctt">'+typeTab+'</div>'
-    +'<div style="font-size:10px;color:var(--mt);margin-bottom:5px">Pilih Data / Metric</div>'
+    +'<div style="font-size:10px;color:var(--txt2);margin-bottom:5px">Pilih Data / Metric</div>'
     +'<div class="mg2">'+metricGrid+'</div>'
     +sesuaikan
-    +'<div style="font-size:10px;color:var(--mt);margin-bottom:5px">Preview</div>'
+    +'<div style="font-size:10px;color:var(--txt2);margin-bottom:5px">Preview</div>'
     +'<div class="cp">'+(s.metrics.length===0?'<span>Pilih metric di atas</span>':svgPreview(s))+'</div>'
     +'<button class="btn-a" onclick="saveConfig()" style="margin-top:8px">💾 Simpan Konfigurasi</button>'
     +'</div>';
@@ -1464,10 +1483,10 @@ function renderSPVByApp(spvList, data, mode){
       return '<div style="background:'+col+'0D;border:1px solid '+col+'22;border-radius:8px;padding:10px 14px;flex:1;min-width:140px">'
         +'<div style="font-size:11px;font-weight:700;color:'+col+';margin-bottom:6px">'+a+'</div>'
         +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">'
-        +'<div><div style="font-size:8px;color:var(--txt3)">Avg Rank</div><div style="font-size:15px;font-weight:700;color:var(--navy)">'+avgR+'</div></div>'
-        +'<div><div style="font-size:8px;color:var(--txt3)">Avg Rate</div><div style="font-size:15px;font-weight:700;color:var(--green)">'+avgRt+'%</div></div>'
-        +'<div><div style="font-size:8px;color:var(--txt3)">Best Rank</div><div style="font-size:12px;font-weight:600;color:'+(best.rank===1?'#047857':best.rank===2?'#B45309':'#B91C1C')+'">'+best.rankLabel+'</div></div>'
-        +'<div><div style="font-size:8px;color:var(--txt3)">Data</div><div style="font-size:12px;font-weight:600;color:var(--txt2)">'+ad.length+' bln</div></div>'
+        +'<div><div style="font-size:8px;color:#5A5650">Avg Rank</div><div style="font-size:15px;font-weight:700;color:var(--navy)">'+avgR+'</div></div>'
+        +'<div><div style="font-size:8px;color:#5A5650">Avg Rate</div><div style="font-size:15px;font-weight:700;color:var(--green)">'+avgRt+'%</div></div>'
+        +'<div><div style="font-size:8px;color:#5A5650">Best Rank</div><div style="font-size:12px;font-weight:600;color:'+(best.rank===1?'#047857':best.rank===2?'#B45309':'#B91C1C')+'">'+best.rankLabel+'</div></div>'
+        +'<div><div style="font-size:8px;color:#5A5650">Data</div><div style="font-size:12px;font-weight:600;color:var(--txt2)">'+ad.length+' bln</div></div>'
         +'</div></div>';
     }).join('');
 
@@ -1490,7 +1509,7 @@ function renderSPVByApp(spvList, data, mode){
           +'<div style="font-size:7px;font-weight:700;color:'+bc+';margin-bottom:2px">'+d.rank+'</div>'
           +'<div style="width:100%;max-width:22px;border-radius:2px;background:'+bc+'22;border:1px solid '+bc+'44" title="'+d.bulan+': Rank '+d.rank+' dari '+d.kompetitor+'">'
           +'<div style="height:'+h+'px;background:'+bc+';border-radius:2px;width:100%"></div></div>'
-          +'<div style="font-size:6px;color:var(--txt3);margin-top:2px">'+d.bulan.substring(0,3)+'</div>'
+          +'<div style="font-size:6px;color:#5A5650;margin-top:2px">'+d.bulan.substring(0,3)+'</div>'
           +'</div>';
       }).join('');
 
@@ -1498,7 +1517,7 @@ function renderSPVByApp(spvList, data, mode){
         +'<div style="flex-shrink:0;width:150px;font-size:10px;color:var(--txt);font-weight:500">'+key+'</div>'
         +'<div style="display:flex;gap:4px;align-items:flex-end;flex:1;height:70px">'+bars+'</div>'
         +'<div style="flex-shrink:0;text-align:right;min-width:80px">'
-        +'<div style="font-size:10px;color:var(--txt3)">'+( mode==='pct'?'Avg Rate':mode==='total'?'Total Rank':'Avg Rank')+'</div>'
+        +'<div style="font-size:10px;color:#5A5650">'+( mode==='pct'?'Avg Rate':mode==='total'?'Total Rank':'Avg Rank')+'</div>'
         +'<div style="font-size:14px;font-weight:700;color:'+rc+'">'+avgR+'</div>'
         +'<div class="bdg" style="background:'+rb+';color:'+rc+';margin-top:3px">Best: Rank '+bestR+'</div>'
         +'</div></div>';
@@ -1635,7 +1654,7 @@ function buildFlowDoc(type){
     var harian='<div class="sc" style="border-left:3px solid '+color+';margin-bottom:16px">'
       +'<div class="sey">Operasional Harian</div>'
       +'<div class="st">Flow Kerja Harian TL — 08.00–20.00 WITA</div>'
-      +'<div style="font-size:12px;color:var(--txt2);line-height:1.6;margin-bottom:8px">Tim Leader adalah pemimpin lapangan yang bertanggung jawab penuh terhadap performa harian setiap agent di timnya. TL bukan hanya pencatat angka — TL adalah <strong>coach, pemecah masalah, dan jembatan</strong> antara agent dengan SPV.</div>'
+      +'<div style="font-size:12px;color:#2A3550;line-height:1.6;margin-bottom:8px">Tim Leader adalah pemimpin lapangan yang bertanggung jawab penuh terhadap performa harian setiap agent di timnya. TL bukan hanya pencatat angka — TL adalah <strong>coach, pemecah masalah, dan jembatan</strong> antara agent dengan SPV.</div>'
       +'</div>';
 
     harian+=section('07.30 – 08.00 WITA','Persiapan Sebelum Operasional',[
@@ -1746,7 +1765,7 @@ function buildFlowDoc(type){
     var harian='<div class="sc" style="border-left:3px solid '+color+';margin-bottom:16px">'
       +'<div class="sey">Operasional Harian</div>'
       +'<div class="st">Flow Kerja Harian SPV — 08.00–20.00 WITA</div>'
-      +'<div style="font-size:12px;color:var(--txt2);line-height:1.6;margin-bottom:8px">Supervisor adalah pengelola operasional satu atau lebih project. SPV tidak mengelola agent secara langsung — SPV mengelola TL. Tanggung jawab SPV adalah memastikan setiap TL bekerja efektif, data akurat, dan posisi kompetitif project terus terjaga.</div>'
+      +'<div style="font-size:12px;color:#2A3550;line-height:1.6;margin-bottom:8px">Supervisor adalah pengelola operasional satu atau lebih project. SPV tidak mengelola agent secara langsung — SPV mengelola TL. Tanggung jawab SPV adalah memastikan setiap TL bekerja efektif, data akurat, dan posisi kompetitif project terus terjaga.</div>'
       +'</div>';
 
     harian+=section('07.45 – 08.00 WITA','Persiapan Sebelum Operasional',[
