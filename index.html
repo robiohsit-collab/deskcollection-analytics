@@ -22,6 +22,31 @@ body{background:#F5F4F0;color:#1A2B5E;font-family:system-ui,sans-serif;min-heigh
   --txt:#1A2340;--txt2:#2A3550;--txt3:#5A5650;
   --sw:220px;--th:48px;--ac:var(--navy);--rad:10px
 }
+[data-theme="dark"]{
+  --navy:#1A2B5E;--navy2:#243672;--navy3:#1a2540;
+  --blue:#60a5fa;--blue-l:#1e3a5f;--blue-t:#93c5fd;
+  --green:#4ade80;--green-l:#0f2e1f;--green-t:#86efac;
+  --red:#f87171;--red-l:#3f1518;--red-t:#fca5a5;
+  --orange:#fb923c;--orange-l:#3f2410;--orange-t:#fdba74;
+  --amber:#fbbf24;--amber-l:#3f2f0a;--amber-t:#fde68a;
+  --purple:#a78bfa;--purple-l:#2e2150;--purple-t:#c4b5fd;
+  --pink:#f472b6;--pink-l:#3f1530;--pink-t:#f9a8d4;
+  --teal:#2dd4bf;--teal-l:#0a3330;--teal-t:#5eead4;
+  --bd:#2a3550;--bd2:#3a4570;
+  --s0:#0a0e1a;--s1:#0f1420;--s2:#141a2e;
+  --txt:var(--navy);--txt2:#c5cfe0;--txt3:var(--txt2)
+}
+[data-theme="dark"] body{background:var(--s0);color:var(--txt)}
+[data-theme="dark"] .topbar{background:#0d1220}
+[data-theme="dark"] .sidebar{background:var(--s1)}
+[data-theme="dark"] .kc,[data-theme="dark"] .sc,[data-theme="dark"] .pc,[data-theme="dark"] .tw,[data-theme="dark"] .wc,[data-theme="dark"] .cs,[data-theme="dark"] .md{background:var(--s2)}
+[data-theme="dark"] th{background:#0d1220}
+[data-theme="dark"] .ttr td{background:#1a2540!important}
+[data-theme="dark"] .fs,[data-theme="dark"] .cp{background:var(--s1)}
+.theme-toggle{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:2px;margin-right:4px}
+.theme-btn{padding:4px 9px;font-size:10px;font-weight:600;cursor:pointer;border-radius:4px;color:rgba(255,255,255,.6);transition:all .15s;background:none;border:none}
+.theme-btn.on{background:rgba(255,255,255,.9);color:#1A2B5E}
+
 
 /* ── TOPBAR ─────────────────────────────────────────────────────── */
 .topbar{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--th);background:var(--navy);display:flex;align-items:center;padding:0 18px;gap:12px}
@@ -189,6 +214,10 @@ tr:hover td{background:var(--navy3);cursor:pointer}
     <span class="logo-t">DeskCollection Analytics</span>
   </div>
   <div class="tb-r">
+    <div class="theme-toggle">
+      <button class="theme-btn" id="btnLight" onclick="setTheme('light')">☀ Terang</button>
+      <button class="theme-btn" id="btnDark" onclick="setTheme('dark')">🌙 Gelap</button>
+    </div>
     <span class="upd" id="tUpd"></span>
     <button onclick="refreshData()" title="Refresh data" style="background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);border-radius:5px;padding:3px 8px;cursor:pointer;font-size:10px;display:flex;align-items:center;gap:4px" id="btnRefresh">
       ↻ Refresh
@@ -542,7 +571,7 @@ function updSbar(pg,app){
     if(!el2)return;
     var isOn=(pg==='app'&&a===app)||(pg==='app'&&a==='all'&&!app);
     el2.classList.toggle('on',isOn);
-    el2.style.borderLeftColor=isOn?(PC[a]||'#64748b'):'transparent';
+    el2.style.borderLeftColor=isOn?(PC[a]||'var(--txt2)'):'transparent';
   });
   // Show filter panel when app or weekly/monthly selected
   var showF=pg!=='home'||app;
@@ -647,7 +676,7 @@ function renderHome(){
   var maxA=Math.max.apply(null,G.projects.map(function(p){return Math.max.apply(null,p.monthlyAkun.slice(0,ci+1).filter(function(v){return v>0;}).concat([1]));}));
   el('hTrend').innerHTML=G.projects.map(function(p){
     var bars=p.monthlyAkun.slice(0,ci+1).map(function(v,mi){
-      if(!v)return '<div class="bw"><div class="bar" style="height:4px;background:#1e293b"></div><div class="bl">'+MS[mi]+'</div></div>';
+      if(!v)return '<div class="bw"><div class="bar" style="height:4px;background:var(--txt2)"></div><div class="bl">'+MS[mi]+'</div></div>';
       var dm=d2(p.monthlyAkun,mi);
       var bg=mi===ci?p.color:dm>0?'#BBF7D0':dm<0?'#FECACA':p.color+'55';
       return '<div class="bw" title="'+MS[mi]+': '+v+(dm?' ('+ds(dm)+')':'')+'"><div class="bar" style="height:'+Math.max(8,(v/maxA)*100)+'%;background:'+bg+'"></div><div class="bl">'+MS[mi]+'</div></div>';
@@ -679,13 +708,13 @@ function renderHome(){
       return '<td style="color:'+(mi===ci?p.color:dm>0?'#047857':dm<0?'#B91C1C':'#8896B0')+';font-weight:'+(mi===ci?'700':'400')+'">'+(v||'-')+'</td>';
     }).join('');
     tb+='<tr onclick="nav(\'app\',\''+p.name+'\')">'
-      +'<td class="tl"><div style="display:flex;align-items:center;gap:6px"><div style="width:7px;height:7px;border-radius:50%;background:'+p.color+';flex-shrink:0"></div><span style="font-weight:600;color:#e2e8f0">'+p.name+'</span></div></td>'
+      +'<td class="tl"><div style="display:flex;align-items:center;gap:6px"><div style="width:7px;height:7px;border-radius:50%;background:'+p.color+';flex-shrink:0"></div><span style="font-weight:600;color:var(--navy)">'+p.name+'</span></div></td>'
       +tds+'<td style="color:'+dc(dv)+';font-weight:700">'+(ds(dv)||'—')+'</td></tr>';
   });
   var tots=months.map(function(_,mi){return G.projects.reduce(function(s,p){return s+(p.monthlyAkun[mi]||0);},0);});
   var td2=tots[ci]-(tots[ci-1]||0);
   tb+='<tr class="ttr"><td class="tl" style="color:#a78bfa">TOTAL</td>'
-    +tots.map(function(t,mi){return '<td style="color:'+(mi===ci?'#a78bfa':'#e2e8f0')+'">'+t+'</td>';}).join('')
+    +tots.map(function(t,mi){return '<td style="color:'+(mi===ci?'#a78bfa':'var(--navy)')+'">'+t+'</td>';}).join('')
     +'<td style="color:'+dc(td2)+'">'+(td2>0?'+':'')+td2+'</td></tr></tbody>';
   el('hTbl').innerHTML=th+tb;
 }
@@ -695,366 +724,318 @@ function mkKPI(lbl,color,val,sub,dcolor,dtxt){
   return '<div class="kc" style="border-top-color:'+bcolor+'"><div class="kl">'+lbl+'</div><div class="kv" style="color:'+color+'">'+val+'</div>'+(dtxt?'<div class="kd" style="color:'+(dcolor||color)+'">'+dtxt+'</div>':'')+'</div>';
 }
 
+// ── FETCH AGENT DATA (real, dari All Data) ──────────────────────────────────
+var _agentDataCache={};
+function fetchAgentData(app){
+  var key=app+'|'+F.y+'|'+F.m+'|'+F.b+'|'+F.tl+'|'+F.ag;
+  if(!API_URL||API_URL.indexOf('PASTE_URL')>=0)return Promise.resolve({hasData:false,agents:[],daily:[],bucketMetrics:{}});
+  return new Promise(function(resolve){
+    var cb='cbag'+Date.now();
+    var sc=document.createElement('script');
+    var to=setTimeout(function(){delete window[cb];try{document.body.removeChild(sc);}catch(e){}resolve({hasData:false,agents:[],daily:[],bucketMetrics:{}});},15000);
+    window[cb]=function(d){
+      clearTimeout(to);delete window[cb];try{document.body.removeChild(sc);}catch(e){}
+      resolve(d&&!d.error?d:{hasData:false,agents:[],daily:[],bucketMetrics:{}});
+    };
+    sc.onerror=function(){clearTimeout(to);delete window[cb];resolve({hasData:false,agents:[],daily:[],bucketMetrics:{}});};
+    var url=API_URL+'?action=agentdata&callback='+cb+'&app='+encodeURIComponent(app)
+      +(F.y?'&tahun='+encodeURIComponent(F.y):'')
+      +(F.m?'&bulan='+encodeURIComponent(F.m):'')
+      +(F.b?'&bucket='+encodeURIComponent(F.b):'')
+      +(F.tl?'&tl='+encodeURIComponent(F.tl):'')
+      +(F.ag?'&agent='+encodeURIComponent(F.ag):'')
+      +'&t='+Date.now();
+    sc.src=url;
+    document.body.appendChild(sc);
+  });
+}
+
 // ── RENDER APP ────────────────────────────────────────────────────────────
+var _lastRenderedApp=null, _lastAgentData=null;
 function renderApp(app){
   if(!G)return;
   if(app==='all'||!app){renderAllApps();return;}
 
   var p=G.projects.find(function(x){return x.name===app;})||G.projects[0];
   if(!p)return;
-  var ci=G.curMonthIdx,cur=p.monthlyAkun[ci]||0,dv=cur-(p.monthlyAkun[ci-1]||0);
+  var color=p.color;
+  var ci=G.curMonthIdx;
+  var cur=p.monthlyAkun[ci]||0;
+  var dv=cur-(p.monthlyAkun[ci-1]||0);
 
   el('aEy').textContent='Project — '+app;
   el('aTi').textContent=app;
   el('aDe').textContent='SPV: '+p.spv+' · '+p.buckets.length+' bucket · Filter: '+(F.m||'Semua bulan');
-  el('aKPI').innerHTML=mkKPI('Total Akun',p.color,p.akunRef||cur)+mkKPI('Payment','#10b981',p.payment)+mkKPI('Rate',p.color,p.rate)+mkKPI('Perubahan',dc(dv),(dv>=0?'+':'')+dv);
+  el('aKPI').innerHTML=mkKPI('Total Akun',color,p.akunRef||cur)+mkKPI('Payment','#047857',p.payment)+mkKPI('Rate',color,p.rate)+mkKPI('Perubahan',dc(dv),(dv>=0?'+':'')+dv);
 
-  // ── DEMO DATA (akan diganti data real dari API) ──────────────────────────
-  var bkts=p.buckets;
-  var color=p.color;
-
-  // Per-app chart settings (stored in window)
-  var appKey='dcChart_'+app;
-  if(!window[appKey])window[appKey]={waba:{showLabels:true,mode:'sum'},call:{showLabels:true,mode:'sum'},ptp:{showLabels:true,mode:'sum'}};
-  var cs=window[appKey];
-
-  // Chart control bar builder
-  function chartCtrl(key,title){
-    var s=cs[key];
-    var sl=s.showLabels;
-    var sm=s.mode;
-    return '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">'
-      +'<div><div class="sey">'+title.toUpperCase()+'</div><div class="st" style="margin-bottom:0">'+title+'</div></div>'
-      +'<div style="display:flex;gap:6px;align-items:center">'
-      // Labels toggle
-      +'<div style="display:flex;align-items:center;gap:4px;background:#080e1a;border:1px solid var(--bd);border-radius:6px;padding:4px 8px;cursor:pointer" onclick="togAppChart(\''+app+'\',\''+key+'\',\'labels\')"><div style="width:24px;height:14px;border-radius:20px;background:'+(sl?'var(--ac)':'#1e293b')+';position:relative"><div style="position:absolute;top:2px;left:'+(sl?'12':'2')+'px;width:10px;height:10px;border-radius:50%;background:#fff"></div></div><span style="font-size:9px;color:#e2e8f0">Angka</span></div>'
-      // Mode toggle
-      +'<div style="display:flex;background:#080e1a;border:1px solid var(--bd);border-radius:6px;overflow:hidden">'
-      +'<div onclick="togAppChart(\''+app+'\',\''+key+'\',\'sum\')" style="padding:4px 9px;font-size:9px;font-weight:600;cursor:pointer;'+( sm==='sum'?'background:var(--ac);color:#fff':'color:var(--txt2)')+'">Jumlah</div>'
-      +'<div onclick="togAppChart(\''+app+'\',\''+key+'\',\'avg\')" style="padding:4px 9px;font-size:9px;font-weight:600;cursor:pointer;'+(sm==='avg'?'background:var(--ac);color:#fff':'color:var(--txt2)')+'">Rata-rata</div>'
-      +'</div></div></div>';
-  }
-
-  // Demo agent data
-  var demoAgents=[
-    {name:'Rina Marlina',akun:'A001',w1:45000000,w2:38000000,w3:52000000,w4:41000000,wa_blokir:12,ptp:8,ptp_bayar:3,terhubung:180,total_call:450},
-    {name:'Budi Santoso',akun:'A002',w1:28000000,w2:31000000,w3:29000000,w4:33000000,wa_blokir:3,ptp:12,ptp_bayar:10,terhubung:220,total_call:400},
-    {name:'Siti Rahayu',akun:'A003',w1:62000000,w2:58000000,w3:71000000,w4:65000000,wa_blokir:5,ptp:15,ptp_bayar:13,terhubung:280,total_call:480},
-    {name:'Dedi Kurniawan',akun:'A004',w1:12000000,w2:8000000,w3:5000000,w4:9000000,wa_blokir:25,ptp:3,ptp_bayar:0,terhubung:60,total_call:350},
-    {name:'Ani Susanti',akun:'A005',w1:41000000,w2:44000000,w3:39000000,w4:47000000,wa_blokir:7,ptp:10,ptp_bayar:8,terhubung:200,total_call:420},
-    {name:'Rudi Hermawan',akun:'A006',w1:7000000,w2:11000000,w3:6000000,w4:4000000,wa_blokir:18,ptp:4,ptp_bayar:1,terhubung:45,total_call:380},
-    {name:'Maya Dewi',akun:'A007',w1:55000000,w2:49000000,w3:61000000,w4:58000000,wa_blokir:2,ptp:18,ptp_bayar:16,terhubung:310,total_call:500},
-    {name:'Agus Prasetyo',akun:'A008',w1:33000000,w2:36000000,w3:30000000,w4:35000000,wa_blokir:9,ptp:9,ptp_bayar:7,terhubung:170,total_call:390},
-  ];
-
-  // Demo daily payment (14 hari)
-  var days=['1/7','2/7','3/7','4/7','5/7','7/7','8/7','9/7','10/7','11/7','12/7','14/7','15/7','16/7'];
-  var dailyPay=days.map(function(_,i){return Math.floor(Math.random()*80000000+20000000);});
-
-  // Demo metrics per bucket
-  var dm={
-    alat_wa:    bkts.map(function(){return Math.floor(Math.random()*80+40);}),
-    sentuh_wa:  bkts.map(function(){return Math.floor(Math.random()*70+30);}),
-    respon_wa:  bkts.map(function(){return Math.floor(Math.random()*35+10);}),
-    wa_blokir:  bkts.map(function(){return Math.floor(Math.random()*15+2);}),
-    autocall:   bkts.map(function(){return Math.floor(Math.random()*400+150);}),
-    call_manual:bkts.map(function(){return Math.floor(Math.random()*250+80);}),
-    terhubung:  bkts.map(function(){return Math.floor(Math.random()*180+60);}),
-    ptp:        bkts.map(function(){return Math.floor(Math.random()*40+8);}),
-    ptp_bayar:  bkts.map(function(){return Math.floor(Math.random()*25+3);})
-  };
-
-  // ── 1. ANALISA SINGKAT (rule-based) ────────────────────────────────────
-  var totalW1=demoAgents.reduce(function(s,a){return s+a.w1;},0);
-  var totalW4=demoAgents.reduce(function(s,a){return s+a.w4;},0);
-  var trendPay=totalW4>totalW1?'naik':'turun';
-  var pctChange=totalW1>0?((totalW4-totalW1)/totalW1*100).toFixed(1):0;
-  var totalWaBlokir=demoAgents.reduce(function(s,a){return s+a.wa_blokir;},0);
-  var avgPTPRate=(demoAgents.reduce(function(s,a){return s+(a.ptp>0?a.ptp_bayar/a.ptp:0);},0)/demoAgents.length*100).toFixed(0);
-  var avgConnRate=(demoAgents.reduce(function(s,a){return s+(a.total_call>0?a.terhubung/a.total_call:0);},0)/demoAgents.length*100).toFixed(0);
-  var zeroPayAgents=demoAgents.filter(function(a){return (a.w1+a.w2+a.w3+a.w4)<10000000;});
-  var highBlokir=demoAgents.filter(function(a){return a.wa_blokir>=15;});
-
-  // Build analisa text
-  var analisa=[];
-  analisa.push('Payment '+app+' '+( trendPay==='naik'?'mengalami kenaikan':'mengalami penurunan')+' sebesar '+Math.abs(pctChange)+'% dari W1 ke W4 bulan ini.');
-  if(totalWaBlokir>20)analisa.push('WA terblokir cukup tinggi ('+totalWaBlokir+' total) — berpotensi menghambat penyentuhan data.');
-  else analisa.push('Kondisi WA relatif stabil dengan total blokir '+totalWaBlokir+'.');
-  if(avgPTPRate<50)analisa.push('Realisasi PTP masih rendah ('+avgPTPRate+'%) — perlu follow-up intensif ke debitur yang sudah berjanji bayar.');
-  else analisa.push('Realisasi PTP cukup baik di angka '+avgPTPRate+'% — pertahankan intensitas follow-up.');
-  if(avgConnRate<35)analisa.push('Connected rate rendah ('+avgConnRate+'%) — evaluasi kualitas data dan waktu dial optimal.');
-  else analisa.push('Connected rate memadai di '+avgConnRate+'%.');
-  if(zeroPayAgents.length>0)analisa.push(zeroPayAgents.length+' agent dengan payment sangat rendah perlu coaching segera.');
-
-  // Kendala otomatis
-  var kendala=[];
-  if(highBlokir.length>0)kendala.push({level:'high',text:'WA terblokir tinggi pada '+highBlokir.length+' agent ('+highBlokir.map(function(a){return a.name;}).join(', ')+') — aktifkan nomor cadangan'});
-  if(zeroPayAgents.length>0)kendala.push({level:'high',text:zeroPayAgents.length+' agent payment sangat rendah — perlu evaluasi strategi penagihan'});
-  if(avgPTPRate<50)kendala.push({level:'med',text:'Realisasi PTP di bawah 50% — debitur yang sudah berjanji bayar belum di-follow up optimal'});
-  if(avgConnRate<35)kendala.push({level:'med',text:'Connected rate rendah — cek kualitas database dan distribusi jam dial'});
-  if(totalWaBlokir>15)kendala.push({level:'med',text:'Total WA blokir '+totalWaBlokir+' — pertimbangkan rotasi nomor WA blast'});
-  if(kendala.length===0)kendala.push({level:'low',text:'Tidak ada kendala signifikan terdeteksi secara otomatis — data relatif normal'});
-
-  // ── 2. AGENT BURUK (rule-based) ────────────────────────────────────────
-  var scored=demoAgents.map(function(a){
-    var tot=a.w1+a.w2+a.w3+a.w4;
-    var ptpRate=a.ptp>0?a.ptp_bayar/a.ptp:0;
-    var connRate=a.total_call>0?a.terhubung/a.total_call:0;
-    var score=0;
-    var issues=[];
-    if(tot<15000000){score+=3;issues.push('Payment sangat rendah');}
-    else if(tot<25000000){score+=1;issues.push('Payment di bawah rata-rata');}
-    if(a.wa_blokir>=15){score+=2;issues.push('WA terblokir tinggi ('+a.wa_blokir+')');}
-    else if(a.wa_blokir>=8){score+=1;issues.push('WA blokir sedang ('+a.wa_blokir+')');}
-    if(ptpRate<0.3&&a.ptp>0){score+=2;issues.push('Realisasi PTP rendah ('+Math.round(ptpRate*100)+'%)');}
-    if(connRate<0.25){score+=1;issues.push('Connected rate rendah ('+Math.round(connRate*100)+'%)');}
-    // Check trend: W4 < W1
-    if(a.w4<a.w1*0.7){score+=1;issues.push('Tren payment menurun ('+(((a.w4-a.w1)/a.w1)*100).toFixed(0)+'%)');}
-    var cat=score>=4?'Buruk':score>=2?'Perlu Perhatian':score>=1?'Pantau':'Baik';
-    return {name:a.name,akun:a.akun,total:tot,score:score,cat:cat,issues:issues,wa_blokir:a.wa_blokir,ptpRate:ptpRate,connRate:connRate};
-  }).sort(function(a,b){return b.score-a.score;});
-
-  var badAgents=scored.filter(function(a){return a.cat==='Buruk'||a.cat==='Perlu Perhatian';});
-  var goodAgents=scored.filter(function(a){return a.cat==='Baik';});
-
-  // ── 3. PERGERAKAN PAYMENT (trend chart) ────────────────────────────────
-  var maxPay=Math.max.apply(null,dailyPay);
-  var W=500,H=120;
-  var xs=dailyPay.map(function(_,i){return 10+(i/(dailyPay.length-1))*(W-20);});
-  var ys=dailyPay.map(function(v){return H-10-((v/maxPay)*(H-25));});
-  var linePath=xs.map(function(x,i){return (i===0?'M':'L')+x.toFixed(1)+','+ys[i].toFixed(1);}).join(' ');
-  var areaPath=linePath+' L'+(W-10)+','+H+' L10,'+H+'Z';
-  var gidPay='gpay'+p.id;
-
-  var circles=xs.map(function(x,i){
-    var prev=i>0?dailyPay[i-1]:dailyPay[i];
-    var cc=dailyPay[i]>=prev?'#4ade80':'#f87171';
-    return '<circle cx="'+x.toFixed(1)+'" cy="'+ys[i].toFixed(1)+'" r="3" fill="'+cc+'" stroke="#0a1628" stroke-width="1.5"><title>'+days[i]+': '+fRp(dailyPay[i])+'</title></circle>';
-  }).join('');
-
-  var xlbls=xs.filter(function(_,i){return i%2===0;}).map(function(x,i){
-    return '<text x="'+x.toFixed(1)+'" y="'+(H+12)+'" font-size="7" text-anchor="middle" fill="#475569">'+days[i*2]+'</text>';
-  }).join('');
-
-  var payTrend7=dailyPay.slice(-7);
-  var payTrend7Avg=payTrend7.reduce(function(s,v){return s+v;},0)/7;
-  var payTrend14Avg=dailyPay.reduce(function(s,v){return s+v;},0)/dailyPay.length;
-  var trendDir=payTrend7Avg>=payTrend14Avg?'↗ Naik':'↘ Turun';
-  var trendColor=payTrend7Avg>=payTrend14Avg?'#4ade80':'#f87171';
-
-  var paySVG='<svg viewBox="0 0 '+W+' '+(H+20)+'" width="100%" style="display:block">'
-    +'<defs><linearGradient id="'+gidPay+'" x1="0" y1="0" x2="0" y2="1">'
-    +'<stop offset="0%" stop-color="'+color+'" stop-opacity=".25"/>'
-    +'<stop offset="100%" stop-color="'+color+'" stop-opacity="0"/>'
-    +'</linearGradient></defs>'
-    +'<path d="'+areaPath+'" fill="url(#'+gidPay+')"/>'
-    +'<path d="'+linePath+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
-    +circles+xlbls+'</svg>';
-
-  // ── BAR CHART HELPER ──────────────────────────────────────────────────
-  function barCht(labels,datasets,h,opts){
-    var CW=500,CH=h||140;
-    var showLbl=opts&&opts.showLabels!==undefined?opts.showLabels:true;
-    var mode=opts&&opts.mode?opts.mode:'sum';
-    var n=labels.length,gw=(CW-30)/n;
-    var bw=Math.min((gw-4)/datasets.length,16);
-    // Apply mode: avg = divide by n
-    var processedDS=datasets.map(function(ds){
-      return {label:ds.label,color:ds.color,
-        data:ds.data.map(function(v){return mode==='avg'?Math.round(v/8):v;})};
-    });
-    var maxV=Math.max.apply(null,processedDS.reduce(function(a,ds){return a.concat(ds.data);},[]).concat([1]));
-    var rects=labels.map(function(lbl,gi){
-      return processedDS.map(function(ds,di){
-        var v=ds.data[gi]||0;
-        var bh=Math.max(2,(v/maxV)*(CH-22));
-        var bx=15+gi*gw+di*(bw+2);
-        var by=CH-bh-5;
-        var displayVal=v>=1000?(v/1000).toFixed(1)+'K':String(v);
-        return '<rect x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="2" fill="'+ds.color+'" opacity=".85"><title>'+lbl+': '+v+'</title></rect>'
-          +(showLbl&&v>0?'<text x="'+(bx+bw/2)+'" y="'+(by-2)+'" font-size="7" text-anchor="middle" fill="'+ds.color+'">'+displayVal+'</text>':'');
-      }).join('');
-    }).join('');
-    var xlab=labels.map(function(lbl,gi){
-      return '<text x="'+(15+gi*gw+datasets.length*(bw+2)/2)+'" y="'+(CH+8)+'" font-size="7" text-anchor="middle" fill="#475569">'+(lbl.length>5?lbl.substring(0,5)+'..':lbl)+'</text>';
-    }).join('');
-    var lgnd=datasets.map(function(ds,di){
-      return '<rect x="'+(10+di*80)+'" y="'+(CH+16)+'" width="10" height="7" rx="1" fill="'+ds.color+'"/>'
-        +'<text x="'+(23+di*80)+'" y="'+(CH+23)+'" font-size="8" fill="#94a3b8">'+ds.label+(mode==='avg'?' (rata-rata)':'')+'</text>';
-    }).join('');
-    // Mode indicator
-    var modeInd='<text x="'+(CW-5)+'" y="'+(CH+23)+'" font-size="7" text-anchor="end" fill="#334155">'+( mode==='avg'?'Rata-rata':'Jumlah')+'</text>';
-    return '<svg viewBox="0 0 '+CW+' '+(CH+35)+'" width="100%" style="display:block">'+rects+xlab+lgnd+modeInd+'</svg>';
-  }
-
-  // Tren bars (top)
+  // Tren akun bulanan (dari Referensi Akun — G sudah tersedia)
   var maxVTop=Math.max.apply(null,p.monthlyAkun.filter(function(x){return x>0;}).concat([1]));
   var topBars=p.monthlyAkun.slice(0,ci+1).map(function(v,mi){
-    if(!v)return '<div class="bw"><div class="bar" style="height:4px;background:#1e293b"></div><div class="bl">'+MS[mi]+'</div></div>';
+    if(!v)return '<div class="bw"><div class="bar" style="height:4px;background:var(--bd)"></div><div class="bl">'+MS[mi]+'</div></div>';
     var dm=d2(p.monthlyAkun,mi);
     var bg=mi===ci?color:dm>0?'#BBF7D0':dm<0?'#FECACA':color+'55';
     return '<div class="bw" title="'+MS[mi]+': '+v+'"><div class="bar" style="height:'+Math.max(8,(v/maxVTop)*100)+'%;background:'+bg+'"></div><div class="bl">'+MS[mi]+'</div></div>';
   }).join('');
 
-  // ── BUILD HTML OUTPUT ──────────────────────────────────────────────────
-  var html='';
-
-  // KPI Trend (total)
-  html+='<div class="sc"><div class="sey">Tren Akun Bulanan</div><div class="st">Jan s/d '+G.curMonth+'</div>'
+  var html='<div class="sc"><div class="sey">Tren Akun Bulanan</div><div class="st">Jan s/d '+G.curMonth+'</div>'
     +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div class="bs">'+topBars+'</div>'
     +'<div style="font-size:24px;font-weight:900;color:'+color+';flex-shrink:0">'+cur+'</div></div></div>';
 
   // Tren per Bucket (dari Referensi Akun)
   if(p.bucketTrend && Object.keys(p.bucketTrend).length>0){
-    var bktColors=['#6366f1','#0ea5e9','#10b981','#f59e0b','#ec4899','#8b5cf6','#06b6d4','#ef4444','#f43f5e','#84cc16','#14b8a6','#a855f7','#fb923c'];
-    var bktMonths=G.months?G.months.slice(0,G.curMonthIdx+1):[];
+    var bktColors=['#5B4FD6','#0369A1','#047857','#B45309','#BE185D','#8b5cf6','#06b6d4','#B91C1C','#f43f5e','#84cc16','#14b8a6','#a855f7','#fb923c'];
+    var bktMonths=G.months?G.months.slice(0,ci+1):[];
     var bktNames=Object.keys(p.bucketTrend);
-    var allVals=bktNames.reduce(function(a,b){return a.concat(p.bucketTrend[b]||[]);},bktMonths.map(function(){return 0;}));
+    var allVals=bktNames.reduce(function(a,b){return a.concat(p.bucketTrend[b]||[]);},[0]);
     var maxBkt=Math.max.apply(null,allVals.concat([1]));
 
-    // Build trend rows per bucket
     var bktTrendRows=bktNames.map(function(bkt,bi){
       var bktData=p.bucketTrend[bkt]||[];
       var bc=bktColors[bi%bktColors.length];
       var bktBars=bktMonths.map(function(m,mi){
         var v=bktData[mi]||0;
         var prev=mi>0?(bktData[mi-1]||0):v;
-        var bg=v===0?'#1e293b':mi===G.curMonthIdx?bc:v>prev?'#22c55e88':v<prev?'#ef444488':bc+'66';
+        var bg=v===0?'var(--bd)':mi===ci?bc:v>prev?'#BBF7D0':v<prev?'#FECACA':bc+'66';
         var h=v===0?2:Math.max(4,(v/maxBkt)*100);
-        return '<div class="bw" title="'+m+': '+v+' akun">'
-          +'<div class="bar" style="height:'+h+'%;background:'+bg+'"></div>'
-          +'<div class="bl" style="font-size:6px">'+MS[MN.indexOf(m)]+'</div></div>';
+        return '<div class="bw" title="'+m+': '+v+' akun"><div class="bar" style="height:'+h+'%;background:'+bg+'"></div><div class="bl" style="font-size:6px">'+MS[MN.indexOf(m)]+'</div></div>';
       }).join('');
-
-      var curV=bktData[G.curMonthIdx]||0;
-      var prevV=G.curMonthIdx>0?(bktData[G.curMonthIdx-1]||0):0;
-      var dv=curV-prevV;
+      var curV=bktData[ci]||0;
+      var prevV=ci>0?(bktData[ci-1]||0):0;
+      var dv2=curV-prevV;
       return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
-        +'<div style="font-size:9px;font-weight:700;text-align:right;flex-shrink:0;width:100px;color:'+bc+'">'
-        +(bkt.length>10?bkt.substring(0,10)+'..':bkt)+'</div>'
+        +'<div style="font-size:9px;font-weight:700;text-align:right;flex-shrink:0;width:100px;color:'+bc+'">'+(bkt.length>10?bkt.substring(0,10)+'..':bkt)+'</div>'
         +'<div style="display:flex;gap:3px;align-items:flex-end;height:28px;flex:1">'+bktBars+'</div>'
         +'<div style="font-size:10px;font-weight:800;flex-shrink:0;width:28px;text-align:right;color:'+bc+'">'+curV+'</div>'
-        +(dv!==0?'<div style="font-size:9px;color:'+dc(dv)+';flex-shrink:0;width:28px">'+(dv>0?'+':'')+dv+'</div>':'<div style="width:28px"></div>')
+        +(dv2!==0?'<div style="font-size:9px;color:'+dc(dv2)+';flex-shrink:0;width:28px">'+(dv2>0?'+':'')+dv2+'</div>':'<div style="width:28px"></div>')
         +'</div>';
     }).join('');
 
-    html+='<div class="sc">'
-      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px">'
-      +'<div><div class="sey" style="color:'+color+'">Tren Akun per Bucket</div>'
-      +'<div class="st" style="margin-bottom:0">Jan s/d '+G.curMonth+' — '+bktNames.length+' Bucket</div></div>'
+    html+='<div class="sc"><div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px">'
+      +'<div><div class="sey" style="color:'+color+'">Tren Akun per Bucket</div><div class="st" style="margin-bottom:0">Jan s/d '+G.curMonth+' — '+bktNames.length+' Bucket</div></div>'
       +'<div style="display:flex;gap:6px;flex-wrap:wrap">'+bktNames.map(function(bkt,bi){
         var bc=bktColors[bi%bktColors.length];
-        return '<div style="display:flex;align-items:center;gap:3px;font-size:9px;color:#4A4840">'
-          +'<div style="width:6px;height:6px;border-radius:2px;background:'+bc+'"></div>'+bkt+'</div>';
-      }).join('')+'</div></div>'
-      +bktTrendRows+'</div>';
+        return '<div style="display:flex;align-items:center;gap:3px;font-size:9px;color:#2A3550"><div style="width:6px;height:6px;border-radius:2px;background:'+bc+'"></div>'+bkt+'</div>';
+      }).join('')+'</div></div>'+bktTrendRows+'</div>';
   }
 
+  // Placeholder untuk section yang butuh data agent (loading state)
+  html+='<div class="sc" id="agentDataSection"><div class="emt">⏳ Memuat data agent...</div></div>';
+
+  el('aCon').innerHTML=html;
+
+  // Fetch data agent asli, lalu render section analisa
+  fetchAgentData(app).then(function(agentData){
+    if(curApp!==app||curPg!=='app')return; // user sudah pindah halaman
+    _lastAgentData=agentData;
+    renderAgentSections(app, p, agentData);
+  });
+}
+
+function renderAgentSections(app, p, ad){
+  var color=p.color;
+  var sec=el('agentDataSection');
+  if(!sec)return;
+
+  if(!ad.hasData || !ad.agents || !ad.agents.length){
+    sec.outerHTML='<div class="sc" id="agentDataSection"><div class="emt">📭 Belum ada data untuk filter ini di sheet All Data. Isi data harian TL untuk melihat analisa.</div></div>';
+    return;
+  }
+
+  var s=ad.summary;
+  var html='';
+
   // ── ANALISA SINGKAT ──────────────────────────────────────────────────
+  var analisa=[];
+  if(s.trendCompare){
+    var tc=s.trendCompare;
+    var pct=tc.fromVal>0?(((tc.toVal-tc.fromVal)/tc.fromVal)*100).toFixed(1):0;
+    var trendWord=tc.toVal>=tc.fromVal?'naik':'turun';
+    analisa.push('Payment '+app+' '+trendWord+' sebesar '+Math.abs(pct)+'% dari '+tc.from+' ke '+tc.to+' ('+(tc.mode==='weekly'?'perbandingan mingguan':'perbandingan harian')+').');
+  } else {
+    analisa.push('Data masih terlalu sedikit untuk analisa tren — menampilkan snapshot performa saat ini dari '+s.dataPoints+' baris data.');
+  }
+  if(s.totalWaBlokir>0)analisa.push('Total WA terblokir: '+s.totalWaBlokir+'.');
+  if(s.totalPtp>0){
+    var ptpPct=(s.avgPtpRate*100).toFixed(0);
+    analisa.push('Realisasi PTP di angka '+ptpPct+'% ('+Math.round(s.totalPtpBayar)+' dari '+Math.round(s.totalPtp)+' PTP).');
+  }
+  if(s.totalCall>0){
+    var connPct=(s.avgConnRate*100).toFixed(0);
+    analisa.push('Connected rate: '+connPct+'% dari total '+Math.round(s.totalCall)+' panggilan.');
+  }
+
+  // Kendala otomatis (relatif, bukan angka absolut tetap)
+  var kendala=[];
+  var avgPay=s.totalPay/Math.max(1,s.agentCount);
+  var lowPayAgents=ad.agents.filter(function(a){return a.total < avgPay*0.4 && a.total>=0;});
+  var highBlokirAgents=ad.agents.filter(function(a){return a.waBlokir > 0;}).sort(function(a,b){return b.waBlokir-a.waBlokir;});
+  var avgWaBlokir=s.totalWaBlokir/Math.max(1,s.agentCount);
+
+  if(lowPayAgents.length>0 && s.agentCount>1)kendala.push({level:'med',text:lowPayAgents.length+' agent dengan payment jauh di bawah rata-rata tim ('+fRp(Math.round(avgPay))+') — perlu evaluasi'});
+  if(highBlokirAgents.length>0 && highBlokirAgents[0].waBlokir > avgWaBlokir*1.5)kendala.push({level:'high',text:'WA terblokir terkonsentrasi pada '+highBlokirAgents.slice(0,3).map(function(a){return a.name;}).join(', ')+' — aktifkan nomor cadangan'});
+  if(s.totalPtp>0 && s.avgPtpRate<0.3)kendala.push({level:'med',text:'Realisasi PTP di bawah 30% — follow-up debitur yang sudah janji bayar perlu diperkuat'});
+  if(s.totalCall>0 && s.avgConnRate<0.25)kendala.push({level:'med',text:'Connected rate rendah — cek kualitas data dan jam dial'});
+  if(kendala.length===0)kendala.push({level:'low',text:'Tidak ada kendala signifikan terdeteksi dari data saat ini'});
+
   html+='<div class="sc" style="border-left:3px solid '+color+'">'
     +'<div class="sey" style="color:'+color+'">Analisa Otomatis</div>'
-    +'<div class="st">Analisa Singkat — '+app+' / '+(F.m||'Bulan ini')+'</div>'
-    +'<div style="font-size:12px;color:#e2e8f0;line-height:1.7;margin-bottom:14px">'+analisa.join(' ')+'</div>'
-
-    // Kendala
-    +'<div style="font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:8px">Kendala Terdeteksi</div>'
+    +'<div class="st">Analisa Singkat — '+app+' / '+(F.m||'Semua Bulan')+'</div>'
+    +'<div style="font-size:12px;color:#2A3550;line-height:1.7;margin-bottom:14px">'+analisa.join(' ')+'</div>'
+    +'<div style="font-size:10px;color:#5A5650;text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:8px">Kendala Terdeteksi</div>'
     +kendala.map(function(k){
-      var kc=k.level==='high'?'#ef4444':k.level==='med'?'#f59e0b':'#10b981';
-      var kb=k.level==='high'?'rgba(239,68,68,.1)':k.level==='med'?'rgba(245,158,11,.1)':'rgba(16,185,129,.1)';
+      var kc=k.level==='high'?'#B91C1C':k.level==='med'?'#B45309':'#047857';
+      var kb=k.level==='high'?'#FEE2E2':k.level==='med'?'#FEF3C7':'#D1FAE5';
       return '<div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:'+kb+';border-radius:7px;margin-bottom:5px;font-size:11px">'
         +'<div style="width:6px;height:6px;border-radius:50%;background:'+kc+';margin-top:4px;flex-shrink:0"></div>'
-        +'<span style="color:#e2e8f0">'+k.text+'</span></div>';
+        +'<span style="color:#2A3550">'+k.text+'</span></div>';
     }).join('')
     +'</div>';
 
-  // ── PERGERAKAN PAYMENT ──────────────────────────────────────────────
-  html+='<div class="sc">'
-    +'<div class="sey">Pergerakan Payment</div>'
-    +'<div class="st" style="display:flex;justify-content:space-between;align-items:center">'
-    +'<span>Payment Harian — 14 Hari Terakhir</span>'
-    +'<span style="font-size:11px;color:'+trendColor+';font-weight:600">'+trendDir+' (7 hari terakhir)</span></div>'
-    +paySVG
-    // Weekly summary bars
-    +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px">'
-    +[1,2,3,4].map(function(wk){
-      var agWk=demoAgents.map(function(a){return a['w'+wk]||0;});
-      var totWk=agWk.reduce(function(s,v){return s+v;},0);
-      var prev=wk>1?demoAgents.reduce(function(s,a){return s+(a['w'+(wk-1)]||0);},0):totWk;
-      var dwk=totWk-prev;
-      return '<div style="background:var(--s2);border-radius:8px;padding:9px;text-align:center">'
-        +'<div style="font-size:9px;color:var(--txt2);margin-bottom:3px">Week '+wk+'</div>'
-        +'<div style="font-size:13px;font-weight:700;color:'+color+'">'+fRp(totWk)+'</div>'
-        +(wk>1?'<div style="font-size:9px;color:'+dc(dwk)+'">'+( dwk>=0?'+':'')+fRp(Math.abs(dwk))+'</div>':'<div style="font-size:9px;color:var(--txt2)">baseline</div>')
-        +'</div>';
-    }).join('')
-    +'</div></div>';
+  // ── PERGERAKAN PAYMENT (real daily data) ────────────────────────────
+  if(ad.daily && ad.daily.length>=2){
+    var dailyPay=ad.daily.map(function(x){return x.payment;});
+    var days=ad.daily.map(function(x){return x.date;});
+    var maxPay=Math.max.apply(null,dailyPay.concat([1]));
+    var W=500,H=120;
+    var xs=dailyPay.map(function(_,i){return 10+(i/Math.max(1,dailyPay.length-1))*(W-20);});
+    var ys=dailyPay.map(function(v){return H-10-((v/maxPay)*(H-25));});
+    var linePath=xs.map(function(x,i){return (i===0?'M':'L')+x.toFixed(1)+','+ys[i].toFixed(1);}).join(' ');
+    var areaPath=linePath+' L'+(W-10)+','+H+' L10,'+H+'Z';
+    var gidPay='gpay'+p.id;
+    var circles=xs.map(function(x,i){
+      var prev=i>0?dailyPay[i-1]:dailyPay[i];
+      var cc=dailyPay[i]>=prev?'#047857':'#B91C1C';
+      return '<circle cx="'+x.toFixed(1)+'" cy="'+ys[i].toFixed(1)+'" r="3" fill="'+cc+'" stroke="#fff" stroke-width="1.5"><title>'+days[i]+': '+fRp(dailyPay[i])+'</title></circle>';
+    }).join('');
+    var xlbls=xs.filter(function(_,i){return i%2===0||dailyPay.length<6;}).map(function(x,i){
+      var idx=dailyPay.length<6?i:i*2;
+      return '<text x="'+x.toFixed(1)+'" y="'+(H+12)+'" font-size="7" text-anchor="middle" fill="#5A5650">'+days[idx]+'</text>';
+    }).join('');
+    var paySVG='<svg viewBox="0 0 '+W+' '+(H+20)+'" width="100%" style="display:block">'
+      +'<defs><linearGradient id="'+gidPay+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+color+'" stop-opacity=".25"/><stop offset="100%" stop-color="'+color+'" stop-opacity="0"/></linearGradient></defs>'
+      +'<path d="'+areaPath+'" fill="url(#'+gidPay+')"/>'
+      +'<path d="'+linePath+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+      +circles+xlbls+'</svg>';
 
-  // ── AGENT BURUK ─────────────────────────────────────────────────────
-  html+='<div class="sc">'
-    +'<div class="sey" style="color:#f87171">Agent Perlu Perhatian</div>'
+    var trendDir=dailyPay[dailyPay.length-1]>=dailyPay[0]?'↗ Naik':'↘ Turun';
+    var trendColor=dailyPay[dailyPay.length-1]>=dailyPay[0]?'#047857':'#B91C1C';
+
+    html+='<div class="sc"><div class="sey">Pergerakan Payment</div>'
+      +'<div class="st" style="display:flex;justify-content:space-between;align-items:center">'
+      +'<span>Payment Harian — '+days.length+' Hari Data</span>'
+      +'<span style="font-size:11px;color:'+trendColor+';font-weight:600">'+trendDir+'</span></div>'
+      +paySVG+'</div>';
+  } else {
+    html+='<div class="sc"><div class="sey">Pergerakan Payment</div><div class="st">Payment Harian</div>'
+      +'<div class="emt">Data belum cukup untuk menampilkan tren (butuh minimal 2 hari data)</div></div>';
+  }
+
+  // ── AGENT PERLU PERHATIAN (scoring relatif, bukan absolut) ──────────
+  var scored=ad.agents.map(function(a){
+    var score=0, issues=[];
+    if(a.total < avgPay*0.4 && s.agentCount>1){score+=3;issues.push('Payment jauh di bawah rata-rata tim');}
+    else if(a.total < avgPay*0.7 && s.agentCount>1){score+=1;issues.push('Payment di bawah rata-rata');}
+    if(a.waBlokir > avgWaBlokir*1.5 && a.waBlokir>0){score+=2;issues.push('WA terblokir tinggi ('+a.waBlokir+')');}
+    if(a.ptp>0 && a.ptpRate<0.3){score+=2;issues.push('Realisasi PTP rendah ('+Math.round(a.ptpRate*100)+'%)');}
+    if((a.autocall+a.callManual)>0 && a.connRate<0.25){score+=1;issues.push('Connected rate rendah ('+Math.round(a.connRate*100)+'%)');}
+    var cat=score>=4?'Buruk':score>=2?'Perlu Perhatian':score>=1?'Pantau':'Baik';
+    return {name:a.name,akun:a.akun,total:a.total,score:score,cat:cat,issues:issues,waBlokir:a.waBlokir,ptpRate:a.ptpRate,connRate:a.connRate};
+  }).sort(function(a,b){return b.score-a.score;});
+
+  var badAgents=scored.filter(function(a){return a.cat==='Buruk'||a.cat==='Perlu Perhatian';});
+  var goodAgents=scored.filter(function(a){return a.cat==='Baik';});
+
+  html+='<div class="sc"><div class="sey" style="color:#B91C1C">Agent Perlu Perhatian</div>'
     +'<div class="st" style="display:flex;justify-content:space-between;align-items:center">'
-    +'<span>Identifikasi Otomatis berdasarkan Scoring</span>'
-    +'<span style="font-size:10px;color:var(--txt2)">'+badAgents.length+' dari '+demoAgents.length+' agent</span></div>'
-    +(badAgents.length===0?'<div class="emt" style="color:#4ade80">✓ Semua agent dalam kondisi baik</div>':'')
+    +'<span>Identifikasi Otomatis (relatif terhadap rata-rata tim)</span>'
+    +'<span style="font-size:10px;color:#5A5650">'+badAgents.length+' dari '+scored.length+' agent</span></div>'
+    +(badAgents.length===0?'<div class="emt" style="color:#047857">✓ Semua agent dalam kondisi baik relatif terhadap tim</div>':'')
     +badAgents.map(function(a){
-      var catColor=a.cat==='Buruk'?'var(--red)':'var(--amber)';
-      var catBg=a.cat==='Buruk'?'rgba(239,68,68,.1)':'rgba(245,158,11,.1)';
-      return '<div style="border:1px solid '+catColor+'44;border-radius:10px;padding:12px;margin-bottom:8px;background:'+catBg+'">'
+      var catColor=a.cat==='Buruk'?'#B91C1C':'#B45309';
+      var catBg=a.cat==='Buruk'?'#FEE2E2':'#FEF3C7';
+      return '<div style="border:1px solid '+catColor+'44;border-radius:10px;padding:12px;margin-bottom:8px;background:'+catBg+'55">'
         +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px">'
         +'<div style="display:flex;align-items:center;gap:8px">'
         +'<div style="width:30px;height:30px;border-radius:50%;background:'+catBg+';border:1px solid '+catColor+';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:'+catColor+';flex-shrink:0">'
-        +a.name.split(' ').map(function(x){return x[0];}).join('').substring(0,2)+'</div>'
-        +'<div><div style="font-size:12px;font-weight:600;color:#e2e8f0">'+a.name+'</div>'
-        +'<div style="font-size:10px;color:var(--txt2)">'+a.akun+'</div></div></div>'
+        +(a.name||'?').split(' ').map(function(x){return x[0]||'';}).join('').substring(0,2)+'</div>'
+        +'<div><div style="font-size:12px;font-weight:600;color:var(--navy)">'+a.name+'</div><div style="font-size:10px;color:#5A5650">'+a.akun+'</div></div></div>'
         +'<span class="bdg" style="background:'+catBg+';color:'+catColor+'">'+a.cat+'</span></div>'
         +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px">'
-        +'<div style="background:rgba(0,0,0,.2);border-radius:6px;padding:6px;text-align:center"><div style="font-size:9px;color:var(--txt2)">Total Payment</div><div style="font-size:11px;font-weight:600;color:'+catColor+'">'+fRp(a.total)+'</div></div>'
-        +'<div style="background:rgba(0,0,0,.2);border-radius:6px;padding:6px;text-align:center"><div style="font-size:9px;color:var(--txt2)">WA Blokir</div><div style="font-size:11px;font-weight:600;color:'+(a.wa_blokir>=15?'var(--red)':'var(--amber)')+'">'+a.wa_blokir+'</div></div>'
-        +'<div style="background:rgba(0,0,0,.2);border-radius:6px;padding:6px;text-align:center"><div style="font-size:9px;color:var(--txt2)">Conn Rate</div><div style="font-size:11px;font-weight:600;color:'+(a.connRate<0.25?'var(--red)':'var(--amber)')+'">'+Math.round(a.connRate*100)+'%</div></div>'
+        +'<div style="background:#fff;border-radius:6px;padding:6px;text-align:center"><div style="font-size:9px;color:#5A5650">Total Payment</div><div style="font-size:11px;font-weight:600;color:'+catColor+'">'+fRp(a.total)+'</div></div>'
+        +'<div style="background:#fff;border-radius:6px;padding:6px;text-align:center"><div style="font-size:9px;color:#5A5650">WA Blokir</div><div style="font-size:11px;font-weight:600;color:'+(a.waBlokir>0?'#B45309':'#047857')+'">'+a.waBlokir+'</div></div>'
+        +'<div style="background:#fff;border-radius:6px;padding:6px;text-align:center"><div style="font-size:9px;color:#5A5650">Conn Rate</div><div style="font-size:11px;font-weight:600;color:'+(a.connRate<0.25?'#B91C1C':'#047857')+'">'+Math.round(a.connRate*100)+'%</div></div>'
         +'</div>'
-        +'<div style="font-size:10px;color:var(--txt2);margin-bottom:4px;font-weight:600">Kendala Terdeteksi:</div>'
-        +'<div>'+a.issues.map(function(iss){return '<span style="display:inline-block;background:rgba(239,68,68,.15);color:#fca5a5;font-size:9px;padding:2px 8px;border-radius:20px;margin:2px">'+iss+'</span>';}).join('')+'</div>'
+        +'<div style="font-size:10px;color:#5A5650;margin-bottom:4px;font-weight:600">Kendala Terdeteksi:</div>'
+        +'<div>'+a.issues.map(function(iss){return '<span style="display:inline-block;background:#FEE2E2;color:#B91C1C;font-size:9px;padding:2px 8px;border-radius:20px;margin:2px">'+iss+'</span>';}).join('')+'</div>'
         +'</div>';
     }).join('')
-
-    // Good agents summary
     +(goodAgents.length>0?
-      '<div style="margin-top:10px;padding:10px;background:rgba(16,185,129,.06);border-radius:8px;border:1px solid rgba(16,185,129,.2)">'
-      +'<div style="font-size:10px;color:#10b981;font-weight:600;margin-bottom:6px">✓ Agent Performa Baik ('+goodAgents.length+')</div>'
-      +'<div style="display:flex;flex-wrap:wrap;gap:5px">'+goodAgents.map(function(a){return '<span class="bdg" style="background:rgba(16,185,129,.1);color:#4ade80">'+a.name+'</span>';}).join('')+'</div></div>'
+      '<div style="margin-top:10px;padding:10px;background:#D1FAE5;border-radius:8px;border:1px solid #A7F3D0">'
+      +'<div style="font-size:10px;color:#047857;font-weight:600;margin-bottom:6px">✓ Agent Performa Baik ('+goodAgents.length+')</div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:5px">'+goodAgents.map(function(a){return '<span class="bdg" style="background:#fff;color:#047857">'+a.name+'</span>';}).join('')+'</div></div>'
     :'')
     +'</div>';
 
-  // ── CHART WABA + CALL ──────────────────────────────────────────────
-  html+='<div class="sc">'+chartCtrl('waba','Aktivitas WA per Bucket')+barCht(bkts,[
-      {label:'Alat WA',color:'#6366f1',data:dm.alat_wa},
-      {label:'Sentuh WA',color:'#0ea5e9',data:dm.sentuh_wa},
-      {label:'Respon WA',color:'#10b981',data:dm.respon_wa},
-      {label:'WA Blokir',color:'#ef4444',data:dm.wa_blokir}
-    ],140,cs.waba)+'</div>';
+  // ── CHART WABA / CALL / PTP per bucket (real data) ──────────────────
+  var bkts=Object.keys(ad.bucketMetrics||{});
+  if(bkts.length>0){
+    function barCht(labels,datasets,h){
+      var CW=500,CH=h||140;
+      var n=labels.length,gw=(CW-30)/n;
+      var bw=Math.min((gw-4)/datasets.length,16);
+      var maxV=Math.max.apply(null,datasets.reduce(function(a,ds){return a.concat(ds.data);},[]).concat([1]));
+      var rects=labels.map(function(lbl,gi){
+        return datasets.map(function(ds,di){
+          var v=ds.data[gi]||0;
+          var bh=Math.max(2,(v/maxV)*(CH-22));
+          var bx=15+gi*gw+di*(bw+2);
+          var by=CH-bh-5;
+          return '<rect x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="2" fill="'+ds.color+'" opacity=".85"><title>'+lbl+': '+v+'</title></rect>'
+            +'<text x="'+(bx+bw/2)+'" y="'+(by-2)+'" font-size="7" text-anchor="middle" fill="'+ds.color+'">'+(v>0?v:'')+'</text>';
+        }).join('');
+      }).join('');
+      var xlab=labels.map(function(lbl,gi){
+        return '<text x="'+(15+gi*gw+datasets.length*(bw+2)/2)+'" y="'+(CH+8)+'" font-size="7" text-anchor="middle" fill="#5A5650">'+(lbl.length>5?lbl.substring(0,5)+'..':lbl)+'</text>';
+      }).join('');
+      var lgnd=datasets.map(function(ds,di){
+        return '<rect x="'+(10+di*80)+'" y="'+(CH+16)+'" width="10" height="7" rx="1" fill="'+ds.color+'"/>'
+          +'<text x="'+(23+di*80)+'" y="'+(CH+23)+'" font-size="8" fill="#3A4560">'+ds.label+'</text>';
+      }).join('');
+      return '<svg viewBox="0 0 '+CW+' '+(CH+35)+'" width="100%" style="display:block">'+rects+xlab+lgnd+'</svg>';
+    }
 
-  html+='<div class="sc">'+chartCtrl('call','Call Activity per Bucket')+barCht(bkts,[
-      {label:'Autocall',color:'#f59e0b',data:dm.autocall},
-      {label:'Manual',color:'#8b5cf6',data:dm.call_manual},
-      {label:'Terhubung',color:'#06b6d4',data:dm.terhubung}
-    ],140,cs.call)+'</div>';
+    html+='<div class="sc"><div class="sey">Aktivitas WA per Bucket</div><div class="st">Alat Kerja vs Penyentuhan vs Respon vs Blokir</div>'
+      +barCht(bkts,[
+        {label:'Alat WA',color:'#5B4FD6',data:bkts.map(function(b){return ad.bucketMetrics[b].alatWa;})},
+        {label:'Sentuh WA',color:'#0369A1',data:bkts.map(function(b){return ad.bucketMetrics[b].sentuhWa;})},
+        {label:'Respon WA',color:'#047857',data:bkts.map(function(b){return ad.bucketMetrics[b].responWa;})},
+        {label:'WA Blokir',color:'#B91C1C',data:bkts.map(function(b){return ad.bucketMetrics[b].waBlokir;})}
+      ],140)+'</div>';
 
-  html+='<div class="sc">'+chartCtrl('ptp','Progres PTP per Bucket')+barCht(bkts,[
-      {label:'PTP',color:'#ec4899',data:dm.ptp},
-      {label:'PTP Bayar',color:'#10b981',data:dm.ptp_bayar}
-    ],120,cs.ptp)+'</div>';
+    html+='<div class="sc"><div class="sey">Call Activity per Bucket</div><div class="st">Autocall vs Call Manual vs Terhubung</div>'
+      +barCht(bkts,[
+        {label:'Autocall',color:'#B45309',data:bkts.map(function(b){return ad.bucketMetrics[b].autocall;})},
+        {label:'Manual',color:'#8b5cf6',data:bkts.map(function(b){return ad.bucketMetrics[b].callManual;})},
+        {label:'Terhubung',color:'#06b6d4',data:bkts.map(function(b){return ad.bucketMetrics[b].terhubung;})}
+      ],140)+'</div>';
 
-  // Bucket list
+    html+='<div class="sc"><div class="sey">Progres PTP per Bucket</div><div class="st">PTP Masuk vs PTP Bayar</div>'
+      +barCht(bkts,[
+        {label:'PTP',color:'#BE185D',data:bkts.map(function(b){return ad.bucketMetrics[b].ptp;})},
+        {label:'PTP Bayar',color:'#047857',data:bkts.map(function(b){return ad.bucketMetrics[b].ptpBayar;})}
+      ],120)+'</div>';
+  }
+
+  // Bucket list (dari Referensi Akun)
   var bktRows=p.buckets.map(function(b){
     var aRef=G.akun&&G.akun[app]&&G.akun[app].buckets?G.akun[app].buckets[b]||0:0;
     return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--bd);font-size:11px">'
       +'<div style="display:flex;align-items:center;gap:7px"><div style="width:5px;height:5px;border-radius:50%;background:'+color+'"></div>'+b+'</div>'
       +'<span class="bdg" style="background:'+color+'22;color:'+color+'">'+aRef+' akun</span></div>';
   }).join('');
-
   html+='<div class="sc"><div class="sey">Daftar Bucket</div><div class="st">'+p.buckets.length+' Bucket</div>'+bktRows+'</div>';
 
-  el('aCon').innerHTML=html;
+  sec.outerHTML='<div id="agentDataSection">'+html+'</div>';
 }
 
 // ── ALL APPS COMPARISON ────────────────────────────────────────────────────
@@ -1076,7 +1057,7 @@ function renderAllApps(){
       +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">'
       +'<div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600"><div style="width:8px;height:8px;border-radius:50%;background:'+p.color+'"></div>'+p.name+'</div>'
       +'<div style="font-size:11px;color:'+p.color+';font-weight:700">'+cur+' akun</div></div>'
-      +'<div style="background:#1e293b;border-radius:4px;height:7px;overflow:hidden">'
+      +'<div style="background:var(--txt2);border-radius:4px;height:7px;overflow:hidden">'
       +'<div style="background:'+p.color+';height:100%;width:'+pct+'%;border-radius:4px;transition:width .4s"></div></div>'
       +'<div style="display:flex;justify-content:space-between;margin-top:2px;font-size:9px;color:var(--txt2)"><span>SPV: '+p.spv+'</span><span>'+p.buckets.length+' bucket</span><span>Rate: '+p.rate+'</span></div>'
       +'</div>';
@@ -1085,7 +1066,7 @@ function renderAllApps(){
   var tRows=G.projects.map(function(p){
     var cur=p.monthlyAkun[ci]||0,dv=p.delta;
     return '<tr onclick="navApp(\"'+p.name+'\"")" style="cursor:pointer">'
-      +'<td class="tl"><div style="display:flex;align-items:center;gap:6px"><div style="width:7px;height:7px;border-radius:50%;background:'+p.color+';flex-shrink:0"></div><span style="font-weight:600;color:#e2e8f0">'+p.name+'</span></div></td>'
+      +'<td class="tl"><div style="display:flex;align-items:center;gap:6px"><div style="width:7px;height:7px;border-radius:50%;background:'+p.color+';flex-shrink:0"></div><span style="font-weight:600;color:var(--navy)">'+p.name+'</span></div></td>'
       +'<td style="color:'+p.color+';">'+(p.akunRef||cur)+'</td>'
       +'<td style="color:#10b981;">'+p.payment+'</td>'
       +'<td style="color:'+p.color+';">'+p.rate+'</td>'
@@ -1107,41 +1088,79 @@ function renderAllApps(){
 // ── RENDER WEEKLY ──────────────────────────────────────────────────────────
 function renderWeekly(){
   if(!G)return;
-  el('wEy').textContent='ACR — '+(F.app||'Semua Aplikasi')+' / '+(curApp||'Semua')+' / '+(F.m||'Juli');
-  // Data dari G (real data) — gunakan data dummy hanya jika belum ada data API
-  var ags=[];
-  // Data akan diambil dari API ketika tersedia
-  var tw1=ags.reduce(function(s,a){return s+a.w[0];},0);
-  var bestAgent=ags.length>0?ags.slice().sort(function(a,b){return b.w[0]-a.w[0];})[0].name.split(' ')[0]:'-';
-  var avgPay=ags.length>0?fRp(Math.round(tw1/ags.length)):'Rp 0';
-  el('wKPI').innerHTML=mkKPI('Total Agent','var(--navy)',ags.length||0)+mkKPI('Total Payment W1','#10b981',fRp(tw1))+mkKPI('Best Agent','#f59e0b',bestAgent)+mkKPI('Rata-rata/Agent','#0ea5e9',avgPay);
+  el('wEy').textContent='ACR — '+(F.app||'Semua Aplikasi')+' / '+(F.m||'Semua Bulan');
+  el('wKPI').innerHTML='<div class="kc"><div class="kl">Memuat...</div><div class="kv" style="color:var(--txt2)">...</div></div>'.repeat(4);
+  el('wGrid').innerHTML='<div style="grid-column:1/-1" class="emt">⏳ Memuat data ACR...</div>';
+  el('wTbl').innerHTML='';
 
-  if(!ags.length){
-    el('wGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--txt2);background:var(--s2);border:1px solid var(--bd);border-radius:var(--rad)"><div style="font-size:32px;margin-bottom:10px">📭</div><div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:6px">Belum Ada Data</div><div style="font-size:12px">Data akan muncul setelah TL mengisi sheet All Data</div></div>';
+  fetchWeeklyData().then(function(d){
+    if(curPg!=='weekly')return;
+    renderWeeklyTable(d);
+  });
+}
+
+function fetchWeeklyData(){
+  if(!API_URL||API_URL.indexOf('PASTE_URL')>=0)return Promise.resolve({hasData:false,weeks:[],agents:[]});
+  return new Promise(function(resolve){
+    var cb='cbwk'+Date.now();
+    var sc=document.createElement('script');
+    var to=setTimeout(function(){delete window[cb];try{document.body.removeChild(sc);}catch(e){}resolve({hasData:false,weeks:[],agents:[]});},15000);
+    window[cb]=function(d){
+      clearTimeout(to);delete window[cb];try{document.body.removeChild(sc);}catch(e){}
+      resolve(d&&!d.error?d:{hasData:false,weeks:[],agents:[]});
+    };
+    sc.onerror=function(){clearTimeout(to);delete window[cb];resolve({hasData:false,weeks:[],agents:[]});};
+    var url=API_URL+'?action=weekly&callback='+cb
+      +'&app='+encodeURIComponent(F.app||'all')
+      +(F.y?'&tahun='+encodeURIComponent(F.y):'')
+      +(F.m?'&bulan='+encodeURIComponent(F.m):'')
+      +(F.b?'&bucket='+encodeURIComponent(F.b):'')
+      +(F.tl?'&tl='+encodeURIComponent(F.tl):'')
+      +(F.ag?'&agent='+encodeURIComponent(F.ag):'')
+      +'&t='+Date.now();
+    sc.src=url;
+    document.body.appendChild(sc);
+  });
+}
+
+function renderWeeklyTable(d){
+  if(!d.hasData || !d.agents || !d.agents.length){
+    el('wKPI').innerHTML=mkKPI('Total Agent','var(--navy)',0)+mkKPI('Total Payment','#047857','Rp 0')+mkKPI('Best Agent','#B45309','-')+mkKPI('Rata-rata','#0369A1','Rp 0');
+    el('wGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#3A4560;background:var(--s2);border:1px solid var(--bd);border-radius:var(--rad)"><div style="font-size:32px;margin-bottom:10px">📭</div><div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:6px">Belum Ada Data</div><div style="font-size:12px">Data akan muncul setelah TL mengisi sheet All Data sesuai filter yang dipilih</div></div>';
     el('wTbl').innerHTML='';
     return;
   }
-  el('wGrid').innerHTML=[1,2,3,4].map(function(wk,wi){
-    var wData=ags.map(function(a){return {name:a.name,akun:a.akun,pay:a.w[wi]||0};}).filter(function(x){return x.pay>0;}).sort(function(a,b){return b.pay-a.pay;}).slice(0,10);
+
+  var ags=d.agents;
+  var tw1=ags.reduce(function(s,a){return s+(a.w[0]||0);},0);
+  var bestAgent=ags.slice().sort(function(a,b){return b.total-a.total;})[0];
+  var totalAll=ags.reduce(function(s,a){return s+a.total;},0);
+  var avgPay=ags.length>0?totalAll/ags.length:0;
+
+  el('wKPI').innerHTML=mkKPI('Total Agent','var(--navy)',ags.length)
+    +mkKPI('Total Payment','#047857',fRp(totalAll))
+    +mkKPI('Best Agent','#B45309',bestAgent?bestAgent.name.split(' ')[0]:'-')
+    +mkKPI('Rata-rata/Agent','#0369A1',fRp(Math.round(avgPay)));
+
+  el('wGrid').innerHTML=(d.weeks||[]).map(function(wobj){
+    var wk=wobj.week, wData=(wobj.agents||[]).slice(0,10);
     if(!wData.length)return '<div class="wc"><div class="wh">WEEK '+wk+'</div><div class="emt">Belum ada data</div></div>';
-    return '<div class="wc"><div class="wh">WEEK '+wk+'</div>'+wData.map(function(a,i){
-      var r=i+1,rb=r<=3?'#4CAF50':r<=7?'#FFC107':'#F44336',rf=r<=6?'#000':'#fff';
-      return '<div class="wr"><div style="display:flex;align-items:center;gap:5px"><div class="wrk" style="background:'+rb+';color:'+rf+'">'+r+'</div><div><div class="wn">'+a.name+'</div><div style="font-size:8px;color:var(--txt2)">'+a.akun+'</div></div></div><div class="wp">'+fRp(a.pay)+'</div></div>';
+    return '<div class="wc"><div class="wh">WEEK '+wk+'</div>'+wData.map(function(a){
+      var r=a.rank,rb=r<=3?'#1B6B3A':r<=7?'#B45309':'#B91C1C',rf='#fff';
+      return '<div class="wr"><div style="display:flex;align-items:center;gap:5px"><div class="wrk" style="background:'+rb+';color:'+rf+'">'+r+'</div><div><div class="wn">'+a.name+'</div><div style="font-size:8px;color:#5A5650">'+a.akun+'</div></div></div><div class="wp">'+a.paymentFmt+'</div></div>';
     }).join('')+'</div>';
   }).join('');
 
-  var sorted=ags.slice().sort(function(a,b){return (b.w[0]+b.w[1]+b.w[2]+b.w[3])-(a.w[0]+a.w[1]+a.w[2]+a.w[3]);});
-  var totAll=sorted.reduce(function(s,a){return s+a.w[0]+a.w[1]+a.w[2]+a.w[3];},0);
+  var sorted=ags.slice().sort(function(a,b){return b.total-a.total;});
   var th='<thead><tr><th class="tl">Akun</th><th class="tl">Nama Agent</th><th>Total</th><th>W1</th><th>W2</th><th>W3</th><th>W4</th><th>%</th><th>Rank</th></tr></thead>';
   var tb='<tbody>'+sorted.map(function(a,i){
-    var tot=a.w[0]+a.w[1]+a.w[2]+a.w[3];
-    var pct=totAll>0?((tot/totAll)*100).toFixed(1):0;
-    var rb=i<3?'#1B6B3A':i<7?'#B45309':'#B91C1C',rf='#fff';
-    return '<tr><td class="tl" style="color:var(--txt2)">'+a.akun+'</td><td class="tl" style="font-weight:500;color:#e2e8f0">'+a.name+'</td><td style="color:#10b981;font-weight:600">'+fRp(tot)+'</td>'
-      +a.w.map(function(v){return '<td style="color:'+(v?'#4ade80':'var(--mt)')+'">'+fRp(v)+'</td>';}).join('')
-      +'<td style="color:#818cf8">'+pct+'%</td><td><div class="wrk" style="background:'+rb+';color:'+rf+';margin:0 auto;width:20px;height:20px;font-size:8px">'+(i+1)+'</div></td></tr>';
-  }).join('')+'<tr class="ttr"><td class="tl" colspan="2" style="color:#a78bfa">TOTAL</td><td style="color:#10b981">'+fRp(totAll)+'</td>'
-    +[0,1,2,3].map(function(wi){return '<td>'+fRp(sorted.reduce(function(s,a){return s+a.w[wi];},0))+'</td>';}).join('')
+    var pct=totalAll>0?((a.total/totalAll)*100).toFixed(1):0;
+    var rb=i<3?'#1B6B3A':i<7?'#B45309':'#B91C1C';
+    return '<tr><td class="tl" style="color:#3A4560">'+a.akun+'</td><td class="tl" style="font-weight:500;color:var(--navy)">'+a.name+'</td><td style="color:#047857;font-weight:600">'+fRp(a.total)+'</td>'
+      +a.w.map(function(v){return '<td style="color:'+(v?'#047857':'#5A5650')+'">'+fRp(v)+'</td>';}).join('')
+      +'<td style="color:#0369A1">'+pct+'%</td><td><div class="wrk" style="background:'+rb+';color:#fff;margin:0 auto;width:20px;height:20px;font-size:8px">'+(i+1)+'</div></td></tr>';
+  }).join('')+'<tr class="ttr"><td class="tl" colspan="2" style="color:var(--navy)">TOTAL</td><td style="color:#047857">'+fRp(totalAll)+'</td>'
+    +[0,1,2,3].map(function(wi){return '<td>'+fRp(sorted.reduce(function(s,a){return s+(a.w[wi]||0);},0))+'</td>';}).join('')
     +'<td>100%</td><td>—</td></tr></tbody>';
   el('wTbl').innerHTML=th+tb;
 }
@@ -1161,7 +1180,7 @@ function renderMonthly(){
   var tb='<tbody>'+sorted.map(function(a){
     var pct=totPay>0?((a.total/totPay)*100).toFixed(1):0;
     var rb=a.rank<=3?'#1B6B3A':a.rank<=7?'#B45309':'#B91C1C',rf='#fff';
-    return '<tr><td class="tl" style="font-size:10px;color:var(--txt2)">'+a.akun+'</td><td class="tl" style="font-weight:500;color:#e2e8f0">'+a.name+'</td><td style="color:#10b981;font-weight:700">'+fRp(a.total)+'</td>'
+    return '<tr><td class="tl" style="font-size:10px;color:var(--txt2)">'+a.akun+'</td><td class="tl" style="font-weight:500;color:var(--navy)">'+a.name+'</td><td style="color:#10b981;font-weight:700">'+fRp(a.total)+'</td>'
       +a.w.map(function(v){return '<td style="color:'+(v>0?'#4ade80':'var(--mt)')+'">'+( v>0?fRp(v):'Rp0')+'</td>';}).join('')
       +'<td style="color:#818cf8">'+pct+'%</td>'
       +'<td><div class="wrk" style="background:'+rb+';color:'+rf+';margin:0 auto;width:22px;height:22px;font-size:9px">'+a.rank+'</div></td></tr>';
@@ -1183,9 +1202,36 @@ function saveSlots(){
   try{localStorage.setItem(STORE_KEY+'_'+app,JSON.stringify(slots));}catch(e){}
 }
 
+var _cpData={hasData:false,buckets:[],metrics:{},agentCount:0};
+var _cpCache={};
+
+function fetchChartPreview(app){
+  if(_cpCache[app])return Promise.resolve(_cpCache[app]);
+  if(!API_URL||API_URL.indexOf('PASTE_URL')>=0)return Promise.resolve({hasData:false,buckets:[],metrics:{},agentCount:0});
+  return new Promise(function(resolve){
+    var cb='cbcp'+Date.now();
+    var sc=document.createElement('script');
+    var to=setTimeout(function(){delete window[cb];try{document.body.removeChild(sc);}catch(e){}resolve({hasData:false,buckets:[],metrics:{},agentCount:0});},15000);
+    window[cb]=function(d){
+      clearTimeout(to);delete window[cb];try{document.body.removeChild(sc);}catch(e){}
+      var res=d&&!d.error?d:{hasData:false,buckets:[],metrics:{},agentCount:0};
+      _cpCache[app]=res;
+      resolve(res);
+    };
+    sc.onerror=function(){clearTimeout(to);delete window[cb];resolve({hasData:false,buckets:[],metrics:{},agentCount:0});};
+    sc.src=API_URL+'?action=chartpreview&callback='+cb+'&app='+encodeURIComponent(app)+'&t='+Date.now();
+    document.body.appendChild(sc);
+  });
+}
+
 function renderCB(){
   slots=loadSlots();
-  renderSlots();
+  var app=el('chApp')?el('chApp').value||'all':'all';
+  el('chSlots').innerHTML='<div class="emt">⏳ Memuat data untuk preview...</div>';
+  fetchChartPreview(app).then(function(d){
+    _cpData=d;
+    renderSlots();
+  });
 }
 
 function renderSlots(){
@@ -1213,13 +1259,13 @@ function renderSlot(s){
     +'<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">'
     // Show/hide labels toggle
     +'<div style="display:flex;align-items:center;gap:6px">'
-    +'<div onclick="togLabels('+s.id+')" style="width:34px;height:18px;border-radius:20px;background:'+(sl?'var(--ac)':'#1e293b')+';cursor:pointer;position:relative;transition:background .2s">'
+    +'<div onclick="togLabels('+s.id+')" style="width:34px;height:18px;border-radius:20px;background:'+(sl?'var(--ac)':'var(--txt2)')+';cursor:pointer;position:relative;transition:background .2s">'
     +'<div style="position:absolute;top:3px;left:'+(sl?'18':'3')+'px;width:12px;height:12px;border-radius:50%;background:#fff;transition:left .2s"></div></div>'
-    +'<span style="font-size:10px;color:#e2e8f0">Tampilkan Angka</span></div>'
+    +'<span style="font-size:10px;color:var(--navy)">Tampilkan Angka</span></div>'
     // Mode selector
     +'<div style="display:flex;gap:3px">'
-    +'<div onclick="setMode('+s.id+',\'sum\')" style="padding:3px 10px;font-size:9px;border-radius:4px;cursor:pointer;font-weight:600;'+(sm==='sum'?'background:var(--ac);color:#fff':'background:#1e293b;color:var(--txt2)')+'">Jumlah</div>'
-    +'<div onclick="setMode('+s.id+',\'avg\')" style="padding:3px 10px;font-size:9px;border-radius:4px;cursor:pointer;font-weight:600;'+(sm==='avg'?'background:var(--ac);color:#fff':'background:#1e293b;color:var(--txt2)')+'">Rata-rata</div></div>'
+    +'<div onclick="setMode('+s.id+',\'sum\')" style="padding:3px 10px;font-size:9px;border-radius:4px;cursor:pointer;font-weight:600;'+(sm==='sum'?'background:var(--ac);color:#fff':'background:var(--txt2);color:var(--txt2)')+'">Jumlah</div>'
+    +'<div onclick="setMode('+s.id+',\'avg\')" style="padding:3px 10px;font-size:9px;border-radius:4px;cursor:pointer;font-weight:600;'+(sm==='avg'?'background:var(--ac);color:#fff':'background:var(--txt2);color:var(--txt2)')+'">Rata-rata</div></div>'
     // Mode hint
     +'<span style="font-size:9px;color:var(--txt2)">'+( sm==='avg'?'📊 Tampil rata-rata per agent':'📊 Tampil total keseluruhan')+'</span>'
     +'</div></div>';
@@ -1238,73 +1284,104 @@ function renderSlot(s){
 }
 
 function svgPreview(s){
-  var colors=['#6366f1','#0ea5e9','#10b981','#f59e0b','#ec4899','#8b5cf6','#06b6d4','#ef4444'];
+  var colors=['#5B4FD6','#0369A1','#047857','#B45309','#BE185D','#8b5cf6','#06b6d4','#B91C1C'];
   var W=400,H=120;
   var sl=s.showLabels!==false;
   var sm=s.mode||'sum';
-  // Stacked / Grouped use bar renderer with different layout
+
+  if(!_cpData.hasData || !_cpData.buckets.length){
+    return '<div style="text-align:center;color:#5A5650;font-size:11px;padding:20px">📭 Belum ada data untuk aplikasi ini di All Data</div>';
+  }
+
+  var buckets=_cpData.buckets;
+  var agentCount=_cpData.agentCount||1;
+
+  // Ambil data real per metric, terapkan mode (sum/avg)
+  function getSeries(key){
+    var raw=_cpData.metrics[key]||buckets.map(function(){return 0;});
+    if(key==='rate')return raw.map(function(v){return v*100;}); // fraction to %
+    if(sm==='avg')return raw.map(function(v){return agentCount>0?v/agentCount:v;});
+    return raw;
+  }
+
+  var validMetrics=s.metrics.filter(function(m){return _cpData.metrics[m];});
+  if(!validMetrics.length)return '<div style="text-align:center;color:#5A5650;font-size:11px;padding:20px">Pilih metric di atas</div>';
+
+  var metricLabels={os:'OS Data Baru',payment:'Payment',rate:'Rate %',databaru:'Data Baru',totdata:'Total Data',jmldatabayar:'Jml Data Bayar',autocall:'Autocall',manual:'Call Manual',terhubung:'Terhubung',ptp:'PTP',ptpbayar:'PTP Bayar',wablokir:'WA Blokir',alatwa:'Alat WA',alatgojek:'Alat Gojek',sentuhwa:'Sentuh WA',responwa:'Respon WA',sentuhgojek:'Sentuh Gojek',respongojek:'Respon Gojek',sentuhwaba:'Sentuh WABA',responwaba:'Respon WABA'};
+
+  // ── STACKED / GROUPED (per bucket) ──────────────────────────────────
   if(s.type==='Stacked'||s.type==='Grouped'){
-    var bn=8,bpg=s.metrics.length,gw=(W-20)/bn;
-    var bw=s.type==='Grouped'?Math.min(gw/bpg-2,14):Math.min(gw-4,20);
-    var allB=Array.from({length:bn},function(_,gi){
-      var colors=['#5B4FD6','#0369A1','#047857','#B45309','#BE185D','#8b5cf6','#06b6d4','#B91C1C'];
+    var bn=buckets.length,gw=(W-20)/bn;
+    var bw=s.type==='Grouped'?Math.min(gw/validMetrics.length-2,14):Math.min(gw-4,20);
+    var allSeries=validMetrics.map(getSeries);
+    var maxV=s.type==='Stacked'
+      ? Math.max.apply(null,buckets.map(function(_,bi){return allSeries.reduce(function(sum,ser){return sum+ser[bi];},0);}).concat([1]))
+      : Math.max.apply(null,allSeries.reduce(function(a,ser){return a.concat(ser);},[]).concat([1]));
+    var allB=buckets.map(function(bkt,gi){
       if(s.type==='Stacked'){
         var yOff=H-10;
-        return s.metrics.map(function(m,mi){
-          var bh=Math.random()*25+8;
+        return allSeries.map(function(ser,mi){
+          var v=ser[gi]||0, bh=Math.max(0,(v/maxV)*(H-20));
           var bx=10+gi*gw+(gw-bw)/2;
           yOff-=bh;
-          return '<rect x="'+bx+'" y="'+yOff+'" width="'+bw+'" height="'+bh+'" fill="'+colors[mi%8]+'" opacity=".85"/>';
+          return '<rect x="'+bx+'" y="'+yOff+'" width="'+bw+'" height="'+bh+'" fill="'+colors[mi%8]+'" opacity=".85"><title>'+bkt+' '+metricLabels[validMetrics[mi]]+': '+Math.round(v)+'</title></rect>';
         }).join('');
       } else {
-        return s.metrics.map(function(m,mi){
-          var bh=Math.random()*60+20,bx=10+gi*gw+mi*(bw+2),by=H-10-bh;
-          return '<rect x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="2" fill="'+colors[mi%8]+'" opacity=".85"/>';
+        return allSeries.map(function(ser,mi){
+          var v=ser[gi]||0, bh=Math.max(1,(v/maxV)*(H-20));
+          var bx=10+gi*gw+mi*(bw+2), by=H-10-bh;
+          return '<rect x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="2" fill="'+colors[mi%8]+'" opacity=".85"><title>'+bkt+' '+metricLabels[validMetrics[mi]]+': '+Math.round(v)+'</title></rect>';
         }).join('');
       }
     }).join('');
     return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'">'+allB+'</svg>';
   }
+
+  // ── RADAR (axes = metrics, value = total per metric) ────────────────
   if(s.type==='Radar'){
-    var cx=H/2+10,cy=H/2,r=H/2-12,n=Math.max(s.metrics.length,3);
-    var colors=['#5B4FD6','#0369A1','#047857'];
+    var cx=H/2+10,cy=H/2,r=H/2-12,n=Math.max(validMetrics.length,3);
+    var totals=validMetrics.map(function(m){return getSeries(m).reduce(function(a,b){return a+b;},0);});
+    var maxT=Math.max.apply(null,totals.concat([1]));
     var axes=Array.from({length:n},function(_,i){
       var a=2*Math.PI*i/n-Math.PI/2;
       return '<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+r*Math.cos(a)).toFixed(1)+'" y2="'+(cy+r*Math.sin(a)).toFixed(1)+'" stroke="var(--bd)" stroke-width="0.5"/>';
     }).join('');
-    var polygon=s.metrics.slice(0,n).map(function(_,i){
+    var polygon=validMetrics.map(function(m,i){
       var a=2*Math.PI*i/n-Math.PI/2;
-      var v=Math.random()*0.7+0.3;
+      var v=maxT>0?totals[i]/maxT:0;
       return (cx+r*v*Math.cos(a)).toFixed(1)+','+(cy+r*v*Math.sin(a)).toFixed(1);
     }).join(' ');
     return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'">'
       +'<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="var(--bd)" stroke-width="0.5"/>'
-      +'<circle cx="'+cx+'" cy="'+cy+'" r="'+(r*0.6).toFixed(0)+'" fill="none" stroke="var(--bd)" stroke-width="0.5"/>'
-      +axes
-      +'<polygon points="'+polygon+'" fill="#5B4FD622" stroke="#5B4FD6" stroke-width="1.5"/>'
-      +'</svg>';
+      +axes+'<polygon points="'+polygon+'" fill="#5B4FD622" stroke="#5B4FD6" stroke-width="1.5"/></svg>';
   }
+
+  // ── WATERFALL (metric pertama, per bucket berurutan) ─────────────────
   if(s.type==='Waterfall'){
-    var bn=Math.min(s.metrics.length||5,6),bw2=Math.min((W-20)/bn-6,40);
-    var vals=Array.from({length:bn},function(){return (Math.random()>0.5?1:-1)*(Math.random()*40+10);});
-    var base=60;
-    var bars=vals.map(function(v,i){
-      var isPos=v>0;
-      var bh=Math.abs(v);
+    var ser=getSeries(validMetrics[0]);
+    var bn2=buckets.length,bw2=Math.min((W-20)/bn2-6,40);
+    var base=60,maxAbs=Math.max.apply(null,ser.map(Math.abs).concat([1]));
+    var bars=ser.map(function(v,i){
+      var prev=i>0?ser[i-1]:0;
+      var delta=i>0?v-prev:v;
+      var isPos=delta>=0;
+      var bh=Math.min(50,Math.abs(delta)/maxAbs*50);
       var by=isPos?H-10-base-bh:H-10-base;
       if(!isPos)base-=bh; else base+=bh;
       var bx=10+i*(bw2+6);
-      return '<rect x="'+bx+'" y="'+by.toFixed(0)+'" width="'+bw2+'" height="'+bh.toFixed(0)+'" rx="2" fill="'+(isPos?'#047857':'#B91C1C')+'" opacity=".85"/>';
+      return '<rect x="'+bx+'" y="'+by.toFixed(0)+'" width="'+bw2+'" height="'+bh.toFixed(0)+'" rx="2" fill="'+(isPos?'#047857':'#B91C1C')+'" opacity=".85"><title>'+buckets[i]+': '+Math.round(v)+'</title></rect>';
     }).join('');
     return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'">'+bars+'</svg>';
   }
+
+  // ── LINE / AREA (per bucket sebagai sumbu X) ─────────────────────────
   if(s.type==='Line'||s.type==='Area'){
-    var bars=12;
-    var svgContent=s.metrics.map(function(m,mi){
-      var pts=Array.from({length:bars},function(){return Math.random()*80+20;});
-      var xs=pts.map(function(_,i){return 10+(i/(bars-1))*(W-20);});
-      var ys=pts.map(function(v){return H-10-(v/100)*(H-20);});
-      var d=xs.map(function(x,i){return (i===0?'M':'L')+x+','+ys[i];}).join(' ');
+    var svgContent=validMetrics.map(function(m,mi){
+      var ser=getSeries(m);
+      var maxV2=Math.max.apply(null,ser.concat([1]));
+      var xs=buckets.map(function(_,i){return 10+(i/Math.max(1,buckets.length-1))*(W-20);});
+      var ys=ser.map(function(v){return H-10-(v/maxV2)*(H-20);});
+      var d=xs.map(function(x,i){return (i===0?'M':'L')+x.toFixed(1)+','+ys[i].toFixed(1);}).join(' ');
       var gid='pg'+s.id+'m'+mi;
       var area=d+' L'+xs[xs.length-1]+','+H+' L'+xs[0]+','+H+'Z';
       return '<defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+colors[mi%8]+'" stop-opacity=".2"/><stop offset="100%" stop-color="'+colors[mi%8]+'" stop-opacity="0"/></linearGradient></defs>'
@@ -1313,30 +1390,40 @@ function svgPreview(s){
     }).join('');
     return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'">'+svgContent+'</svg>';
   }
+
+  // ── DONUT (proporsi total per metric) ────────────────────────────────
   if(s.type==='Donut'){
-    var cx=H/2+10,cy=H/2,r=H/2-10,inn=H/4;
-    var tot=s.metrics.length,sa=-Math.PI/2;
-    var slices=s.metrics.map(function(m,mi){
-      var angle=(2*Math.PI)/tot;
-      var x1=cx+r*Math.cos(sa),y1=cy+r*Math.sin(sa);
-      var x2=cx+r*Math.cos(sa+angle),y2=cy+r*Math.sin(sa+angle);
-      var xi1=cx+inn*Math.cos(sa),yi1=cy+inn*Math.sin(sa);
-      var xi2=cx+inn*Math.cos(sa+angle),yi2=cy+inn*Math.sin(sa+angle);
+    var cx2=H/2+10,cy2=H/2,r2=H/2-10,inn=H/4;
+    var totals2=validMetrics.map(function(m){return getSeries(m).reduce(function(a,b){return a+b;},0);});
+    var sumAll=totals2.reduce(function(a,b){return a+b;},0)||1;
+    var sa=-Math.PI/2;
+    var slices=validMetrics.map(function(m,mi){
+      var angle=(totals2[mi]/sumAll)*2*Math.PI;
+      var x1=cx2+r2*Math.cos(sa),y1=cy2+r2*Math.sin(sa);
+      var x2=cx2+r2*Math.cos(sa+angle),y2=cy2+r2*Math.sin(sa+angle);
+      var xi1=cx2+inn*Math.cos(sa),yi1=cy2+inn*Math.sin(sa);
+      var xi2=cx2+inn*Math.cos(sa+angle),yi2=cy2+inn*Math.sin(sa+angle);
       var lg=angle>Math.PI?1:0;
-      var pd='M'+xi1+','+yi1+' L'+x1+','+y1+' A'+r+','+r+' 0 '+lg+' 1 '+x2+','+y2+' L'+xi2+','+yi2+' A'+inn+','+inn+' 0 '+lg+' 0 '+xi1+','+yi1+'Z';
+      var pd='M'+xi1+','+yi1+' L'+x1+','+y1+' A'+r2+','+r2+' 0 '+lg+' 1 '+x2+','+y2+' L'+xi2+','+yi2+' A'+inn+','+inn+' 0 '+lg+' 0 '+xi1+','+yi1+'Z';
       sa+=angle;
-      return '<path d="'+pd+'" fill="'+colors[mi%8]+'" opacity=".85"/>';
+      return '<path d="'+pd+'" fill="'+colors[mi%8]+'" opacity=".85"><title>'+metricLabels[m]+': '+Math.round(totals2[mi])+'</title></path>';
     }).join('');
     return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'">'+slices+'</svg>';
   }
-  var bn=12,bpg=s.metrics.length,gw=(W-20)/bn,bw=Math.min(gw/bpg-2,14);
-  var allB=Array.from({length:bn},function(_,gi){
-    return s.metrics.map(function(m,mi){
-      var bh=Math.random()*70+20,bx=10+gi*gw+mi*(bw+2),by=H-10-bh;
-      return '<rect x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="2" fill="'+colors[mi%8]+'" opacity=".85"/>';
+
+  // ── BAR (default, per bucket) ─────────────────────────────────────────
+  var bn3=buckets.length,bpg=validMetrics.length,gw3=(W-20)/bn3,bw3=Math.min(gw3/bpg-2,14);
+  var allSeries3=validMetrics.map(getSeries);
+  var maxV3=Math.max.apply(null,allSeries3.reduce(function(a,ser){return a.concat(ser);},[]).concat([1]));
+  var allB3=buckets.map(function(bkt,gi){
+    return allSeries3.map(function(ser,mi){
+      var v=ser[gi]||0,bh=Math.max(1,(v/maxV3)*(H-22)),bx=10+gi*gw3+mi*(bw3+2),by=H-10-bh;
+      var lbl=v>=1000?(v/1000).toFixed(1)+'K':Math.round(v);
+      return '<rect x="'+bx+'" y="'+by+'" width="'+bw3+'" height="'+bh+'" rx="2" fill="'+colors[mi%8]+'" opacity=".85"><title>'+bkt+' '+metricLabels[validMetrics[mi]]+': '+Math.round(v)+'</title></rect>'
+        +(sl?'<text x="'+(bx+bw3/2)+'" y="'+(by-2)+'" font-size="6" text-anchor="middle" fill="'+colors[mi%8]+'">'+lbl+'</text>':'');
     }).join('');
   }).join('');
-  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'">'+allB+'</svg>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'">'+allB3+'</svg>';
 }
 
 function setSlotType(id,type){var s=slots.find(function(x){return x.id===id;});if(s)s.type=type;renderSlots();}
@@ -1920,7 +2007,18 @@ function init(){
     renderHome();
   });
 }
-document.addEventListener('DOMContentLoaded',init);
+function setTheme(mode){
+  document.documentElement.setAttribute('data-theme',mode);
+  try{localStorage.setItem('dc_theme',mode);}catch(e){}
+  el('btnLight').classList.toggle('on',mode==='light');
+  el('btnDark').classList.toggle('on',mode==='dark');
+}
+function initTheme(){
+  var saved='light';
+  try{saved=localStorage.getItem('dc_theme')||'light';}catch(e){}
+  setTheme(saved);
+}
+document.addEventListener('DOMContentLoaded',function(){initTheme();init();});
 </script>
 </body>
 </html>
