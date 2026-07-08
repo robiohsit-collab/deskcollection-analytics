@@ -472,8 +472,32 @@ function fetchD(forceRefresh){
 
 // Refresh paksa (dipanggil dari tombol refresh)
 function refreshData(){
-  el('tSt').textContent='Refresh...';
-  fetchD(true).then(function(d){G=d;renderHome();});
+  el('tSt').textContent='Memuat...';
+  el('tSt').style.color='#B45309';
+  // Clear client cache
+  _dataCache={home:null,spv:null,lastFetch:0};
+  // Clear server cache via API then fetch fresh
+  if(API_URL&&!API_URL.includes('PASTE_URL')){
+    var cbC='cbc'+Date.now();
+    var sc=document.createElement('script');
+    window[cbC]=function(){
+      delete window[cbC];
+      try{document.body.removeChild(sc);}catch(e){}
+      fetchD(true).then(function(d){
+        G=d;
+        el('tSt').textContent='Live';
+        el('tSt').style.color='#047857';
+        if(curPg==='home')renderHome();
+        else if(curPg==='app'&&curApp)renderApp(curApp);
+        else if(curPg==='weekly')renderWeekly();
+      });
+    };
+    sc.onerror=function(){delete window[cbC];fetchD(true).then(function(d){G=d;renderHome();});};
+    sc.src=API_URL+'?action=clearcache&callback='+cbC;
+    document.body.appendChild(sc);
+  } else {
+    fetchD(true).then(function(d){G=d;renderHome();});
+  }
 }
 function showErr(m){var e=el('errBar');e.textContent='⚠ '+m;e.style.display='block';}
 
@@ -1084,21 +1108,19 @@ function renderAllApps(){
 function renderWeekly(){
   if(!G)return;
   el('wEy').textContent='ACR — '+(F.app||'Semua Aplikasi')+' / '+(curApp||'Semua')+' / '+(F.m||'Juli');
-  var ags=[
-    {name:'NURUL ISMIATI',akun:'EDN108',w:[119300335,0,0,0]},
-    {name:'NURUL ISMIATI',akun:'EDN104',w:[154667229,0,0,0]},
-    {name:'HUSWATUN HASANAH',akun:'EDN096',w:[177849955,0,0,0]},
-    {name:'ERRI ASWAR',akun:'EDN075',w:[132790965,0,0,0]},
-    {name:'NADYA FITRIANA',akun:'EDN071',w:[141757221,0,0,0]},
-    {name:'ABDUL BASID',akun:'EDN067',w:[119020411,0,0,0]},
-    {name:'NUHSI SOLEHAH',akun:'EDN064',w:[153582425,0,0,0]},
-    {name:'MUHAMMAD RIZKI',akun:'EDN046',w:[199025891,0,0,0]},
-    {name:'MUHAMMAD YUSRIL',akun:'EDN043',w:[126870511,0,0,0]},
-    {name:'RIZKA AMALANI',akun:'EDN042',w:[113030398,0,0,0]}
-  ];
+  // Data dari G (real data) — gunakan data dummy hanya jika belum ada data API
+  var ags=[];
+  // Data akan diambil dari API ketika tersedia
   var tw1=ags.reduce(function(s,a){return s+a.w[0];},0);
-  el('wKPI').innerHTML=mkKPI('Total Agent','var(--navy)',ags.length)+mkKPI('Total Payment W1','#10b981',fRp(tw1))+mkKPI('Best Agent','#f59e0b',ags.slice().sort(function(a,b){return b.w[0]-a.w[0];})[0].name.split(' ')[0])+mkKPI('Rata-rata/Agent','#0ea5e9',fRp(Math.round(tw1/ags.length)));
+  var bestAgent=ags.length>0?ags.slice().sort(function(a,b){return b.w[0]-a.w[0];})[0].name.split(' ')[0]:'-';
+  var avgPay=ags.length>0?fRp(Math.round(tw1/ags.length)):'Rp 0';
+  el('wKPI').innerHTML=mkKPI('Total Agent','var(--navy)',ags.length||0)+mkKPI('Total Payment W1','#10b981',fRp(tw1))+mkKPI('Best Agent','#f59e0b',bestAgent)+mkKPI('Rata-rata/Agent','#0ea5e9',avgPay);
 
+  if(!ags.length){
+    el('wGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--txt2);background:var(--s2);border:1px solid var(--bd);border-radius:var(--rad)"><div style="font-size:32px;margin-bottom:10px">📭</div><div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:6px">Belum Ada Data</div><div style="font-size:12px">Data akan muncul setelah TL mengisi sheet All Data</div></div>';
+    el('wTbl').innerHTML='';
+    return;
+  }
   el('wGrid').innerHTML=[1,2,3,4].map(function(wk,wi){
     var wData=ags.map(function(a){return {name:a.name,akun:a.akun,pay:a.w[wi]||0};}).filter(function(x){return x.pay>0;}).sort(function(a,b){return b.pay-a.pay;}).slice(0,10);
     if(!wData.length)return '<div class="wc"><div class="wh">WEEK '+wk+'</div><div class="emt">Belum ada data</div></div>';
@@ -1128,18 +1150,7 @@ function renderWeekly(){
 function renderMonthly(){
   if(!G)return;
   el('mEy').textContent='Monthly Perform — '+(curApp||'Semua')+' / '+(F.m||'Juli');
-  var ags=[
-    {name:'NURUL ISMIATI',akun:'EDN108',total:119300335,w:[119300335,0,0,0],rate:0.4,rank:8},
-    {name:'NURUL ISMIATI',akun:'EDN104',total:154667229,w:[154667229,0,0,0],rate:0.4,rank:3},
-    {name:'HUSWATUN HASANAH',akun:'EDN096',total:177849955,w:[177849955,0,0,0],rate:0.5,rank:2},
-    {name:'ERRI ASWAR',akun:'EDN075',total:132790965,w:[132790965,0,0,0],rate:0.4,rank:6},
-    {name:'NADYA FITRIANA',akun:'EDN071',total:141757221,w:[141757221,0,0,0],rate:0.4,rank:5},
-    {name:'ABDUL BASID',akun:'EDN067',total:119020411,w:[119020411,0,0,0],rate:0.3,rank:9},
-    {name:'NUHSI SOLEHAH',akun:'EDN064',total:153582425,w:[153582425,0,0,0],rate:0.3,rank:4},
-    {name:'MUHAMMAD RIZKI',akun:'EDN046',total:199025891,w:[199025891,0,0,0],rate:0.6,rank:1},
-    {name:'MUHAMMAD YUSRIL',akun:'EDN043',total:126870511,w:[126870511,0,0,0],rate:0.3,rank:7},
-    {name:'RIZKA AMALANI',akun:'EDN042',total:113030398,w:[113030398,0,0,0],rate:0.3,rank:10}
-  ];
+  var ags=[];
   var totPay=ags.reduce(function(s,a){return s+a.total;},0);
   var avgRate=(ags.reduce(function(s,a){return s+a.rate;},0)/ags.length).toFixed(1);
   var top=ags.slice().sort(function(a,b){return a.rank-b.rank;})[0];
@@ -1587,25 +1598,9 @@ function renderSPVDetailTable(data, mode){
 }
 
 function getDemoSPVData(){
-  var data=[];
-  var bulanList=MN.slice(0,7);
-  var appBkt={'Kredione':['M2+','M3+','S2'],'Pinjamin':["B2'","M3''"],'Kredit OK':['S1'],'Rupiah Cepat':['C03','NPA'],'Gopin':['S2 gopay pinjam','M1 TTPL HC']};
-  var kompetitor={'Kredione':6,'Pinjamin':5,'Kredit OK':4,'Rupiah Cepat':8,'Gopin':7};
-  Object.entries(appBkt).forEach(function(e){
-    var app=e[0],bkts=e[1];
-    bkts.forEach(function(bkt){
-      bulanList.forEach(function(m,mi){
-        var rank=Math.floor(Math.random()*3)+1;
-        var k=kompetitor[app]||6;
-        var rateVal=k>1?(k-rank)/(k-1):(rank===1?1:0);
-        data.push({tahun:2025,bulan:m,aplikasi:app,bucket:bkt,rank:rank,kompetitor:k,rate:rateVal,rankLabel:'Rank '+rank+' dari '+k});
-      });
-    });
-  });
-  return data;
+  return [];
 }
 
-// ── RENDER FLOW KERJA TL ───────────────────────────────────────────────────
 function renderFlowTL(){
   el('flowTLContent').innerHTML=buildFlowDoc('tl');
 }
@@ -1879,25 +1874,34 @@ function togAppChart(app,key,action){
 // ── DEMO DATA ──────────────────────────────────────────────────────────────
 function demoD(){
   var akun={};
-  Object.entries(PB).forEach(function(e){var app=e[0],bkts=e[1];akun[app]={total:AR[app],buckets:{}};bkts.forEach(function(b){akun[app].buckets[b]=Math.floor(AR[app]/bkts.length);});});
-  return{updated:'Demo Mode — '+new Date().toLocaleString('id-ID'),curMonth:'Juli',curMonthIdx:6,months:MN,
-    kpi:{totalAkun:351,totalDelta:53,totalPayment:'Rp 0',totalProjects:5},akun,
+  Object.keys(PB).forEach(function(app){
+    akun[app]={total:0,buckets:{}};
+    (PB[app]||[]).forEach(function(b){akun[app].buckets[b]=0;});
+  });
+  return{
+    updated:'Belum ada data — '+new Date().toLocaleString('id-ID'),
+    curMonth:MN[new Date().getMonth()],
+    curMonthIdx:new Date().getMonth(),
+    months:MN,
+    kpi:{totalAkun:0,totalDelta:0,totalPayment:'Rp 0',totalProjects:Object.keys(PC).length},
+    akun:akun,
     projects:Object.entries(PC).map(function(e){
       var n=e[0],col=e[1];
       var bkts=PB[n]||[];
-      // Demo bucket trend — spread AR[n] across buckets
       var bktTrend={};
-      bkts.forEach(function(b,bi){
-        var share=Math.floor(AR[n]/bkts.length)+(bi===0?AR[n]%bkts.length:0);
-        bktTrend[b]=MN.map(function(_,mi){return mi<=6?Math.max(0,share+Math.round((Math.random()-0.5)*3)):0;});
-      });
-      return{id:n.toLowerCase().replace(/\s+/g,'-').replace(/\//g,'-'),name:n,color:col,spv:PS[n]||'-',
-        buckets:bkts,monthlyAkun:[0,0,0,0,0,0,AR[n],0,0,0,0,0],
-        bucketTrend:bktTrend,delta:AR[n],payment:'Rp 0',rate:'0%',akunRef:AR[n]};
-    })};
+      bkts.forEach(function(b){bktTrend[b]=Array(12).fill(0);});
+      return{
+        id:n.toLowerCase().replace(/\s+/g,'-').replace(/\//g,'-'),
+        name:n,color:col,spv:PS[n]||'-',
+        buckets:bkts,
+        monthlyAkun:Array(12).fill(0),
+        bucketTrend:bktTrend,
+        delta:0,payment:'Rp 0',rate:'0%',akunRef:0
+      };
+    })
+  };
 }
 
-// ── INIT ───────────────────────────────────────────────────────────────────
 function init(){
   // Tampilkan skeleton dulu
   el('tSt').textContent='Memuat...';
