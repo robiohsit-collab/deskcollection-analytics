@@ -236,8 +236,7 @@ tr:hover td{background:var(--navy3);cursor:pointer}
     <button class="btn-r" onclick="resetF()">Reset Filter</button>
   </div>
   <div class="ndiv" id="nd2"></div>
-  <div class="ni" id="nWk" onclick="nav('weekly')"><span class="ni-ic">📅</span>Weekly Perform</div>
-  <div class="ni" id="nMo" onclick="nav('monthly')"><span class="ni-ic">📆</span>Monthly Perform</div>
+  <div class="ni" id="nWk" onclick="nav('weekly')"><span class="ni-ic">📊</span>ACR</div>
   <div class="ni" id="nCh" onclick="nav('chart')"><span class="ni-ic">📊</span>Setup Chart/Grafik</div>
   <div class="ni" id="nSpv" onclick="nav('spv')"><span class="ni-ic">👔</span>Performa SPV</div>
   <div class="ndiv"></div>
@@ -292,9 +291,9 @@ tr:hover td{background:var(--navy3);cursor:pointer}
 
   <!-- WEEKLY -->
   <div class="pg" id="pgWeekly">
-    <div class="ey" id="wEy">Performa Mingguan</div>
-    <h1 class="pt">Weekly Perform</h1>
-    <p class="pd">Ranking agent berdasarkan payment per minggu</p>
+    <div class="ey" id="wEy">ACR — Agent Collection Report</div>
+    <h1 class="pt">ACR</h1>
+    <p class="pd">Agent Collection Report — ranking dan performa agent per minggu</p>
     <div class="kg" id="wKPI"></div>
     <div class="wg" id="wGrid"></div>
     <div class="tw">
@@ -303,17 +302,7 @@ tr:hover td{background:var(--navy3);cursor:pointer}
     </div>
   </div>
 
-  <!-- MONTHLY -->
-  <div class="pg" id="pgMonthly">
-    <div class="ey" id="mEy">Performa Bulanan</div>
-    <h1 class="pt">Monthly Perform</h1>
-    <p class="pd">Payment, OS, dan pergerakan weekly per agent</p>
-    <div class="kg" id="mKPI"></div>
-    <div class="tw">
-      <div class="th2"><div class="sey">Tabel Utama</div><div class="st" style="margin-bottom:0">Payment + Weekly per Agent</div></div>
-      <div style="overflow-x:auto"><table id="mTbl"></table></div>
-    </div>
-  </div>
+
 
   <!-- PERFORMA SPV -->
   <div class="pg" id="pgSpv">
@@ -483,9 +472,9 @@ function nav(pg,app){
   curPg=pg;if(app)curApp=app;
   document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
   document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('on');});
-  var pgId={'home':'pgHome','app':'pgApp','weekly':'pgWeekly','monthly':'pgMonthly','chart':'pgChart','spv':'pgSpv','flowTL':'pgFlowTL','flowSPV':'pgFlowSPV'}[pg];
+  var pgId={'home':'pgHome','app':'pgApp','weekly':'pgWeekly','chart':'pgChart','spv':'pgSpv','flowTL':'pgFlowTL','flowSPV':'pgFlowSPV'}[pg];
   if(pgId)el(pgId).classList.add('on');
-  var nId={'home':'nHome','weekly':'nWk','monthly':'nMo','chart':'nCh','spv':'nSpv','flowTL':'nFlowTL','flowSPV':'nFlowSPV'}[pg];
+  var nId={'home':'nHome','weekly':'nWk','chart':'nCh','spv':'nSpv','flowTL':'nFlowTL','flowSPV':'nFlowSPV'}[pg];
   if(nId)el(nId).classList.add('on');
   updSbar(pg,app);
   // Lazy render — hanya render kalau data sudah ada
@@ -493,8 +482,7 @@ function nav(pg,app){
     if(pg==='home')renderHome();
     else if(pg==='app'&&app)renderApp(app);
     else if(pg==='weekly')renderWeekly();
-    else if(pg==='monthly')renderMonthly();
-    else if(pg==='chart')renderCB();
+      else if(pg==='chart')renderCB();
     else if(pg==='spv')renderSPV();
     else if(pg==='flowTL'){renderFlowTL();el('flowSubmenu').style.display='block';el('flowArrow').style.transform='rotate(180deg)';}
     else if(pg==='flowSPV'){renderFlowSPV();el('flowSubmenu').style.display='block';el('flowArrow').style.transform='rotate(180deg)';}
@@ -1076,7 +1064,7 @@ function renderAllApps(){
 // ── RENDER WEEKLY ──────────────────────────────────────────────────────────
 function renderWeekly(){
   if(!G)return;
-  el('wEy').textContent='Weekly Perform — '+(curApp||'Semua')+' / '+(F.m||'Juli');
+  el('wEy').textContent='ACR — '+(curApp||'Semua')+' / '+(F.m||'Juli');
   var ags=[
     {name:'NURUL ISMIATI',akun:'EDN108',w:[119300335,0,0,0]},
     {name:'NURUL ISMIATI',akun:'EDN104',w:[154667229,0,0,0]},
