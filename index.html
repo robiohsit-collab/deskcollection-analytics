@@ -414,7 +414,10 @@ const METRICS=[
   {key:'alatwa',lbl:'Alat WA',col:'U1'},{key:'alatgojek',lbl:'Alat Gojek',col:'U2'},
   {key:'sentuhwa',lbl:'Sentuh WA',col:'U'},{key:'responwa',lbl:'Respon WA',col:'W'},
   {key:'sentuhgojek',lbl:'Sentuh Gojek',col:'V'},{key:'respongojek',lbl:'Respon Gojek',col:'X'},
-  {key:'sentuhwaba',lbl:'Sentuh WABA',col:'AC'},{key:'responwaba',lbl:'Respon WABA',col:'AD'}
+  {key:'sentuhwaba',lbl:'Sentuh WABA',col:'AC'},{key:'responwaba',lbl:'Respon WABA',col:'AD'},
+  {key:'rateConnected',lbl:'Rate Terhubung %',col:'auto'},{key:'ratePtp',lbl:'Rate PTP Bayar %',col:'auto'},
+  {key:'rateRespon',lbl:'Rate Respon WA %',col:'auto'},{key:'rateResponGojek',lbl:'Rate Respon Gojek %',col:'auto'},
+  {key:'rateResponWaba',lbl:'Rate Respon WABA %',col:'auto'},{key:'rateDataBayar',lbl:'Rate Data Bayar %',col:'auto'}
 ];
 const CTYPES=['Bar','Stacked','Grouped','Line','Area','Donut','Radar','Waterfall'];
 
@@ -1017,13 +1020,33 @@ function renderAgentSections(app, p, ad){
         {label:'Autocall',color:'#B45309',data:bkts.map(function(b){return ad.bucketMetrics[b].autocall;})},
         {label:'Manual',color:'#8b5cf6',data:bkts.map(function(b){return ad.bucketMetrics[b].callManual;})},
         {label:'Terhubung',color:'#06b6d4',data:bkts.map(function(b){return ad.bucketMetrics[b].terhubung;})}
-      ],140)+'</div>';
+      ],140)
+      +'<div style="font-size:10px;color:#5A5650;margin-top:8px;margin-bottom:4px;font-weight:600">Rate Terhubung per Bucket:</div>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)">'
+      +bkts.map(function(b){
+        var r=(ad.bucketMetrics[b].rateConnected||0)*100;
+        var rc=r>=30?"#047857":r>=(30*0.6)?"#B45309":"#B91C1C";
+        var rb=r>=30?"#D1FAE5":r>=(30*0.6)?"#FEF3C7":"#FEE2E2";
+        return '<div style="background:'+rb+';border-radius:6px;padding:5px 10px;font-size:10px"><span style="color:#5A5650">'+b+': </span><span style="color:'+rc+';font-weight:700">'+r.toFixed(0)+'%</span></div>';
+      }).join('')
+      +'</div>'
+      +'</div>';
 
     html+='<div class="sc"><div class="sey">Progres PTP per Bucket</div><div class="st">PTP Masuk vs PTP Bayar</div>'
       +barCht(bkts,[
         {label:'PTP',color:'#BE185D',data:bkts.map(function(b){return ad.bucketMetrics[b].ptp;})},
         {label:'PTP Bayar',color:'#047857',data:bkts.map(function(b){return ad.bucketMetrics[b].ptpBayar;})}
-      ],120)+'</div>';
+      ],120)
+      +'<div style="font-size:10px;color:#5A5650;margin-top:8px;margin-bottom:4px;font-weight:600">Rate Realisasi PTP per Bucket:</div>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)">'
+      +bkts.map(function(b){
+        var r=(ad.bucketMetrics[b].ratePtp||0)*100;
+        var rc=r>=50?"#047857":r>=(50*0.6)?"#B45309":"#B91C1C";
+        var rb=r>=50?"#D1FAE5":r>=(50*0.6)?"#FEF3C7":"#FEE2E2";
+        return '<div style="background:'+rb+';border-radius:6px;padding:5px 10px;font-size:10px"><span style="color:#5A5650">'+b+': </span><span style="color:'+rc+';font-weight:700">'+r.toFixed(0)+'%</span></div>';
+      }).join('')
+      +'</div>'
+      +'</div>';
   }
 
   // Bucket list (dari Referensi Akun)
@@ -1299,7 +1322,7 @@ function svgPreview(s){
   // Ambil data real per metric, terapkan mode (sum/avg)
   function getSeries(key){
     var raw=_cpData.metrics[key]||buckets.map(function(){return 0;});
-    if(key==='rate')return raw.map(function(v){return v*100;}); // fraction to %
+    if(key==='rate'||key.indexOf('rate')===0)return raw.map(function(v){return v*100;}); // fraction to %
     if(sm==='avg')return raw.map(function(v){return agentCount>0?v/agentCount:v;});
     return raw;
   }
@@ -1307,7 +1330,7 @@ function svgPreview(s){
   var validMetrics=s.metrics.filter(function(m){return _cpData.metrics[m];});
   if(!validMetrics.length)return '<div style="text-align:center;color:#5A5650;font-size:11px;padding:20px">Pilih metric di atas</div>';
 
-  var metricLabels={os:'OS Data Baru',payment:'Payment',rate:'Rate %',databaru:'Data Baru',totdata:'Total Data',jmldatabayar:'Jml Data Bayar',autocall:'Autocall',manual:'Call Manual',terhubung:'Terhubung',ptp:'PTP',ptpbayar:'PTP Bayar',wablokir:'WA Blokir',alatwa:'Alat WA',alatgojek:'Alat Gojek',sentuhwa:'Sentuh WA',responwa:'Respon WA',sentuhgojek:'Sentuh Gojek',respongojek:'Respon Gojek',sentuhwaba:'Sentuh WABA',responwaba:'Respon WABA'};
+  var metricLabels={os:'OS Data Baru',payment:'Payment',rate:'Rate %',databaru:'Data Baru',totdata:'Total Data',jmldatabayar:'Jml Data Bayar',autocall:'Autocall',manual:'Call Manual',terhubung:'Terhubung',ptp:'PTP',ptpbayar:'PTP Bayar',wablokir:'WA Blokir',alatwa:'Alat WA',alatgojek:'Alat Gojek',sentuhwa:'Sentuh WA',responwa:'Respon WA',sentuhgojek:'Sentuh Gojek',respongojek:'Respon Gojek',sentuhwaba:'Sentuh WABA',responwaba:'Respon WABA',rateConnected:'Rate Terhubung',ratePtp:'Rate PTP Bayar',rateRespon:'Rate Respon WA',rateResponGojek:'Rate Respon Gojek',rateResponWaba:'Rate Respon WABA',rateDataBayar:'Rate Data Bayar'};
 
   // ── STACKED / GROUPED (per bucket) ──────────────────────────────────
   if(s.type==='Stacked'||s.type==='Grouped'){
