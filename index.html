@@ -239,7 +239,8 @@ tr:hover td{background:var(--navy3);cursor:pointer}
     <div class="ni" id="nAppPinjamin" onclick="navApp('Pinjamin')" style="border-left-color:transparent"><span class="ni-ic" style="color:#0ea5e9">●</span><span style="font-size:11px">Pinjamin</span></div>
     <div class="ni" id="nAppRupiah Cepat" onclick="navApp('Rupiah Cepat')" style="border-left-color:transparent"><span class="ni-ic" style="color:#10b981">●</span><span style="font-size:11px">Rupiah Cepat</span></div>
     <div class="ni" id="nAppKredit OK" onclick="navApp('Kredit OK')" style="border-left-color:transparent"><span class="ni-ic" style="color:#f59e0b">●</span><span style="font-size:11px">Kredit OK</span></div>
-    <div class="ni" id="nAppGopin" onclick="navApp('Gopin')" style="border-left-color:transparent"><span class="ni-ic" style="color:#ec4899">●</span><span style="font-size:11px">Gopin</span></div>
+    <div class="ni" id="nAppGopin Nurul" onclick="navApp('Gopin Nurul')" style="border-left-color:transparent"><span class="ni-ic" style="color:#BE185D">●</span><span style="font-size:11px">Gopin Nurul</span></div>
+    <div class="ni" id="nAppGopin Nandalika" onclick="navApp('Gopin Nandalika')" style="border-left-color:transparent"><span class="ni-ic" style="color:#9D174D">●</span><span style="font-size:11px">Gopin Nandalika</span></div>
   </div>
   <div class="ndiv" id="nd1"></div>
   <div class="fp" id="fPanel">
@@ -379,7 +380,7 @@ tr:hover td{background:var(--navy3);cursor:pointer}
       <select class="fs" id="chApp" onchange="renderCB()" style="max-width:200px">
         <option value="all">Semua Aplikasi</option>
         <option>Kredione</option><option>Pinjamin</option><option>Rupiah Cepat</option>
-        <option>Kredit OK</option><option>Gopin</option>
+        <option>Kredit OK</option><option>Gopin Nurul</option><option>Gopin Nandalika</option>
       </select>
     </div>
     <div id="chSlots"></div>
@@ -400,7 +401,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbwWpUJLfoDf5Gym3oMjzKPg
 const MN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 const MS=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
 const PC={'Kredione':'#5B4FD6','Pinjamin':'#0369A1','Rupiah Cepat':'#047857','Kredit OK':'#B45309','Gopin Nurul':'#BE185D','Gopin Nandalika':'#9D174D'};
-const PB={'Kredione':['s1-3 old','S2','M1+','M2+','M3+','M4+'],'Pinjamin':["A1-1'","A1-3'","B1'","B2'","M2''","M3''","M4''"],'Kredit OK':['S1','S2','S3','M2+'],'Rupiah Cepat':['C03','NPA'],'Gopin Nurul':['S1-1 HC','S1-1 gopay pinjam','S1-2 gopay pinjam','S2 gopay pinjam','M1 TTPL HC','M1 TTPL BAU','M2 TTPL'],'Gopin Nandalika':['MGR M2+ FV','MGR M3+ FV','MGR M4+ FV','MGR M5+ FV','MAB M2+ GPL FV','MAB M2+ TTPL FV']};
+const PB={'Kredione':['s1-3 old','S2','S4-1O','M1+','M2+','M3+','M4+'],'Pinjamin':["A1-1'","A1-3'","B1'","B2'","M2''","M3''","M4''"],'Kredit OK':['S1','S2','S3','M2+'],'Rupiah Cepat':['C03','NPA'],'Gopin Nurul':['S1-1 HC','S1-1 gopay pinjam','S1-2 gopay pinjam','S2 gopay pinjam','M1 TTPL HC','M1 TTPL BAU','M2 GPL','M2 TTPL'],'Gopin Nandalika':['MGR M2+ FV','MGR M3+ FV','MGR M4+ FV','MGR M5+ FV','MAB M2+ GPL FV','MAB M2+ TTPL FV']};
 const PS={'Kredione':'Maman','Pinjamin':'Rizky','Rupiah Cepat':'Lalu Rian','Kredit OK':'Rizky','Gopin Nurul':'Nurul','Gopin Nandalika':'Nandalika'};
 const AR={'Kredione':54,'Pinjamin':60,'Rupiah Cepat':100,'Kredit OK':10,'Gopin Nurul':87,'Gopin Nandalika':40};
 
@@ -419,6 +420,17 @@ const METRICS=[
   {key:'rateRespon',lbl:'Rate Respon WA %',col:'auto'},{key:'rateResponGojek',lbl:'Rate Respon Gojek %',col:'auto'},
   {key:'rateResponWaba',lbl:'Rate Respon WABA %',col:'auto'},{key:'rateDataBayar',lbl:'Rate Data Bayar %',col:'auto'}
 ];
+
+// Mapping rate otomatis -> metric sumber yang jadi dasar perhitungannya.
+// Saat rate ini dipilih, sumbernya ikut terpilih otomatis biar chart valid.
+const RATE_SOURCES={
+  rateConnected:['autocall','manual','terhubung'],
+  ratePtp:['ptp','ptpbayar'],
+  rateRespon:['sentuhwa','responwa'],
+  rateResponGojek:['sentuhgojek','respongojek'],
+  rateResponWaba:['sentuhwaba','responwaba'],
+  rateDataBayar:['databaru','jmldatabayar']
+};
 const CTYPES=['Bar','Stacked','Grouped','Line','Area','Donut','Radar','Waterfall'];
 
 // State
@@ -568,7 +580,7 @@ function updSbar(pg,app){
     fApp.style.display=showAppFilter?'block':'none';
   }
   // App list always visible - just highlight active
-  var allApps=['all','Kredione','Pinjamin','Rupiah Cepat','Kredit OK','Gopin'];
+  var allApps=['all','Kredione','Pinjamin','Rupiah Cepat','Kredit OK','Gopin Nurul','Gopin Nandalika'];
   allApps.forEach(function(a){
     var el2=el('nApp'+a);
     if(!el2)return;
@@ -1452,7 +1464,26 @@ function svgPreview(s){
 function setSlotType(id,type){var s=slots.find(function(x){return x.id===id;});if(s)s.type=type;renderSlots();}
 function togLabels(id){var s=slots.find(function(x){return x.id===id;});if(s){s.showLabels=!s.showLabels;renderSlots();}}
 function setMode(id,mode){var s=slots.find(function(x){return x.id===id;});if(s){s.mode=mode;renderSlots();}}
-function togMetric(id,key){var s=slots.find(function(x){return x.id===id;});if(!s)return;var i=s.metrics.indexOf(key);if(i>=0)s.metrics.splice(i,1);else if(s.metrics.length<6)s.metrics.push(key);renderSlots();}
+function togMetric(id,key){
+  var s=slots.find(function(x){return x.id===id;});
+  if(!s)return;
+  var i=s.metrics.indexOf(key);
+  if(i>=0){
+    s.metrics.splice(i,1);
+  } else {
+    if(s.metrics.length<6)s.metrics.push(key);
+    // Kalau ini metric rate otomatis, ikut pilih sumber datanya juga
+    var sources=RATE_SOURCES[key];
+    if(sources){
+      sources.forEach(function(src){
+        if(s.metrics.indexOf(src)<0 && s.metrics.length<6){
+          s.metrics.push(src);
+        }
+      });
+    }
+  }
+  renderSlots();
+}
 function setSlotTitle(id,val){var s=slots.find(function(x){return x.id===id;});if(s)s.title=val;}
 function rmSlot(id){slots=slots.filter(function(s){return s.id!==id;});renderSlots();}
 function addSlot(){var nid=Date.now();slots.push({id:nid,type:'Bar',metrics:[],title:'Chart Baru',showLabels:true,mode:'sum'});renderSlots();setTimeout(function(){var e=el('slot'+nid);if(e)e.scrollIntoView({behavior:'smooth'});},100);}
@@ -1560,7 +1591,8 @@ function renderSPVTable(){
     {name:'Maman',apps:['Kredione'],color:'#5B4FD6'},
     {name:'Rizky',apps:['Pinjamin','Kredit OK'],color:'#0369A1'},
     {name:'Lalu Rian',apps:['Rupiah Cepat'],color:'#047857'},
-    {name:'Nurul',apps:['Gopin'],color:'#BE185D'},
+    {name:'Nurul',apps:['Gopin Nurul'],color:'#BE185D'},
+    {name:'Nandalika',apps:['Gopin Nandalika'],color:'#9D174D'},
   ];
 
   // ── Summary KPI ──────────────────────────────────────────────────────
