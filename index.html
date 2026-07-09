@@ -246,7 +246,7 @@ tr:hover td{background:var(--navy3);cursor:pointer}
   <div class="fp" id="fPanel">
     <div class="fl" id="fAppLabel" style="display:none">Aplikasi</div>
     <select class="fs" id="fApp" style="display:none" onchange="applyF()">
-      <option value="">Semua</option>
+      <option value="" selected>Semua</option>
       <option value="Kredione">Kredione</option>
       <option value="Pinjamin">Pinjamin</option>
       <option value="Rupiah Cepat">Rupiah Cepat</option>
@@ -255,7 +255,7 @@ tr:hover td{background:var(--navy3);cursor:pointer}
       <option value="Gopin Nandalika">Gopin Nandalika</option>
     </select>
     <div class="fl">Tahun</div>
-    <select class="fs" id="fY"><option value="">Semua</option><option value="2025" selected>2025</option><option value="2026">2026</option></select>
+    <select class="fs" id="fY"><option value="" selected>Semua</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>
     <div class="fl">Bulan</div>
     <select class="fs" id="fM">
       <option value="">Semua</option>
@@ -435,7 +435,7 @@ const CTYPES=['Bar','Stacked','Grouped','Line','Area','Donut','Radar','Waterfall
 
 // State
 let G=null, curPg='home', curApp=null;
-let F={y:'2025',m:'Juli',b:'',tl:'',ag:'',d1:null,d2:null};
+let F={y:'',m:'',b:'',tl:'',ag:'',app:'',d1:null,d2:null};
 let calS={y:2025,m:6};
 let slots=[];
 
@@ -661,8 +661,8 @@ function applyF(){
   else if(curPg==='weekly')renderWeekly();
 }
 function resetF(){
-  F={y:'2025',m:'Juli',b:'',tl:'',ag:'',app:'',d1:null,d2:null};
-  ['fY','fM','fB','fTL','fAg'].forEach(function(id){el(id).value=id==='fY'?'2025':id==='fM'?'Juli':'';});
+  F={y:'',m:'',b:'',tl:'',ag:'',app:'',d1:null,d2:null};
+  ['fY','fM','fB','fTL','fAg'].forEach(function(id){el(id).value='';});
   if(el('fApp'))el('fApp').value='';
   renderCal();applyF();
 }
@@ -853,8 +853,20 @@ function renderAgentSections(app, p, ad){
 
   if(!ad.hasData || !ad.agents || !ad.agents.length){
     sec.outerHTML='<div class="sc" id="agentDataSection"><div class="emt">📭 Belum ada data untuk filter ini di sheet All Data. Isi data harian TL untuk melihat analisa.</div></div>';
+    // Reset dropdown TL ke kosong kalau tidak ada data
+    populateTLDropdown([]);
+    populateBucketDropdown(p.buckets||[]);
     return;
   }
+
+  // Populate TL dropdown dari data real agent
+  var tlList=[...new Set((ad.agents||[]).map(function(a){return a.tl||'';}).filter(Boolean))];
+  populateTLDropdown(tlList);
+
+  // Populate Bucket dropdown dari buckets yang ada di data ini
+  var bktList=Object.keys(ad.bucketMetrics||{});
+  if(!bktList.length)bktList=p.buckets||[];
+  populateBucketDropdown(bktList);
 
   var s=ad.summary;
   var html='';
@@ -2042,6 +2054,39 @@ function demoD(){
       };
     })
   };
+}
+
+function populateFilters(){
+  if(!G||!G.projects)return;
+  // Kumpulkan semua TL unik dari seluruh proyek
+  // (diisi dari Home data saja, data agent detail dimuat terpisah per halaman)
+  // Untuk sekarang biarkan kosong — TL akan populate saat renderApp dipanggil
+}
+
+function populateTLDropdown(tlList){
+  var sel=el('fTL');
+  if(!sel)return;
+  var cur=sel.value;
+  sel.innerHTML='<option value="">Semua</option>';
+  (tlList||[]).sort().forEach(function(tl){
+    var o=document.createElement('option');
+    o.value=tl; o.textContent=tl;
+    if(tl===cur)o.selected=true;
+    sel.appendChild(o);
+  });
+}
+
+function populateBucketDropdown(bktList){
+  var sel=el('fB');
+  if(!sel)return;
+  var cur=sel.value;
+  sel.innerHTML='<option value="">Semua</option>';
+  (bktList||[]).forEach(function(b){
+    var o=document.createElement('option');
+    o.value=b; o.textContent=b;
+    if(b===cur)o.selected=true;
+    sel.appendChild(o);
+  });
 }
 
 function init(){
