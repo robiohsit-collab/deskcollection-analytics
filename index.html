@@ -235,12 +235,7 @@ tr:hover td{background:var(--navy3);cursor:pointer}
   <div class="ns">Nama Aplikasi</div>
   <div id="nAppList">
     <div class="ni" id="nAppAll" onclick="navApp('all')" style="border-left-color:transparent"><span class="ni-ic" style="color:#4A4840">●</span><span style="font-size:11px">Semua Aplikasi</span></div>
-    <div class="ni" id="nAppKredione" onclick="navApp('Kredione')" style="border-left-color:transparent"><span class="ni-ic" style="color:#6366f1">●</span><span style="font-size:11px">Kredione</span></div>
-    <div class="ni" id="nAppPinjamin" onclick="navApp('Pinjamin')" style="border-left-color:transparent"><span class="ni-ic" style="color:#0ea5e9">●</span><span style="font-size:11px">Pinjamin</span></div>
-    <div class="ni" id="nAppRupiah Cepat" onclick="navApp('Rupiah Cepat')" style="border-left-color:transparent"><span class="ni-ic" style="color:#10b981">●</span><span style="font-size:11px">Rupiah Cepat</span></div>
-    <div class="ni" id="nAppKredit OK" onclick="navApp('Kredit OK')" style="border-left-color:transparent"><span class="ni-ic" style="color:#f59e0b">●</span><span style="font-size:11px">Kredit OK</span></div>
-    <div class="ni" id="nAppGopin Nurul" onclick="navApp('Gopin Nurul')" style="border-left-color:transparent"><span class="ni-ic" style="color:#BE185D">●</span><span style="font-size:11px">Gopin Nurul</span></div>
-    <div class="ni" id="nAppGopin Nandalika" onclick="navApp('Gopin Nandalika')" style="border-left-color:transparent"><span class="ni-ic" style="color:#9D174D">●</span><span style="font-size:11px">Gopin Nandalika</span></div>
+    <div id="nAppList"></div>
   </div>
   <div class="ndiv" id="nd1"></div>
   <div class="fp" id="fPanel">
@@ -579,6 +574,15 @@ function updSbar(pg,app){
     fAppLbl.style.display=showAppFilter?'block':'none';
     fApp.style.display=showAppFilter?'block':'none';
   }
+
+  // Populate Bucket dropdown dari APP_BUCKETS sesuai app yang dipilih
+  if(pg==='app'&&app&&app!=='all'&&PB[app]){
+    populateBucketDropdown(PB[app]);
+  } else if(pg==='app'&&(!app||app==='all')){
+    // Semua bucket dari semua aplikasi
+    var allBkts=Object.values(PB).reduce(function(a,b){return a.concat(b);},[]);
+    populateBucketDropdown([...new Set(allBkts)]);
+  }
   // App list always visible - just highlight active
   var allApps=['all','Kredione','Pinjamin','Rupiah Cepat','Kredit OK','Gopin Nurul','Gopin Nandalika'];
   allApps.forEach(function(a){
@@ -597,8 +601,8 @@ function updSbar(pg,app){
 
 function navApp(app){
   curApp=app;
+  buildAppNav(app==='all'?null:app);
   if(app==='all'){
-    // Show all-apps comparison view
     nav('app','all');
   } else {
     nav('app',app);
@@ -606,21 +610,34 @@ function navApp(app){
 }
 
 function buildAppNav(activeApp){
-  el('nAppList').innerHTML=Object.keys(PC).map(function(a){
+  var container=el('nAppList');
+  if(!container)return;
+  container.innerHTML=Object.keys(PC).map(function(a){
     var isOn=a===activeApp;
-    return '<div class="ni'+(isOn?' on':'')+'" onclick="nav(\'app\',\''+a+'\')" style="padding-left:20px;border-left-color:'+(isOn?PC[a]:'transparent')+'">'
+    return '<div class="ni'+(isOn?' on':'')+'" onclick="navApp(this.dataset.app)" data-app="'+a+'" style="border-left-color:'+(isOn?PC[a]:'transparent')+'">'
       +'<span class="ni-ic" style="color:'+PC[a]+'">●</span>'
       +'<span style="font-size:11px">'+a+'</span></div>';
   }).join('');
 }
 
 function updFOpts(app){
+  // ── Bucket dropdown: dari data real kalau sudah ada, fallback ke PB config ──
   var buckets=app&&PB[app]?PB[app]:Object.values(PB).reduce(function(a,b){return a.concat(b);},[]);
-  var fB=el('fB');
-  fB.innerHTML='<option value="">Semua</option>'+
-    buckets.filter(function(v,i,a){return a.indexOf(v)===i;})
-    .map(function(b){return '<option>'+b+'</option>';}).join('');
+  populateBucketDropdown(buckets);
   renderCal();
+}
+
+function populateAgentDropdown(agentList){
+  var sel=el('fAg');
+  if(!sel)return;
+  var cur=sel.value;
+  sel.innerHTML='<option value="">Semua</option>';
+  (agentList||[]).sort().forEach(function(ag){
+    var o=document.createElement('option');
+    o.value=ag; o.textContent=ag;
+    if(ag===cur)o.selected=true;
+    sel.appendChild(o);
+  });
 }
 
 // ── CALENDAR ──────────────────────────────────────────────────────────────
@@ -853,15 +870,20 @@ function renderAgentSections(app, p, ad){
 
   if(!ad.hasData || !ad.agents || !ad.agents.length){
     sec.outerHTML='<div class="sc" id="agentDataSection"><div class="emt">📭 Belum ada data untuk filter ini di sheet All Data. Isi data harian TL untuk melihat analisa.</div></div>';
-    // Reset dropdown TL ke kosong kalau tidak ada data
+    // Reset semua dropdown ke kosong kalau tidak ada data
     populateTLDropdown([]);
+    populateAgentDropdown([]);
     populateBucketDropdown(p.buckets||[]);
     return;
   }
 
-  // Populate TL dropdown dari data real agent
+  // Populate TL dropdown dari data real
   var tlList=[...new Set((ad.agents||[]).map(function(a){return a.tl||'';}).filter(Boolean))];
   populateTLDropdown(tlList);
+
+  // Populate Agent dropdown dari data real
+  var agentList=[...new Set((ad.agents||[]).map(function(a){return a.name||'';}).filter(Boolean))];
+  populateAgentDropdown(agentList);
 
   // Populate Bucket dropdown dari buckets yang ada di data ini
   var bktList=Object.keys(ad.bucketMetrics||{});
@@ -1177,6 +1199,12 @@ function renderWeeklyTable(d){
     el('wTbl').innerHTML='';
     return;
   }
+
+  // Populate TL dan Agent dropdown dari data ACR yang baru dimuat
+  var tlListW=[...new Set((d.agents||[]).map(function(a){return a.tl||'';}).filter(Boolean))];
+  var agListW=[...new Set((d.agents||[]).map(function(a){return a.name||'';}).filter(Boolean))];
+  populateTLDropdown(tlListW);
+  populateAgentDropdown(agListW);
 
   var ags=d.agents;
   var tw1=ags.reduce(function(s,a){return s+(a.w[0]||0);},0);
@@ -2104,6 +2132,8 @@ function init(){
     el('tSt').textContent=isDemo?'Demo':'Live';
     el('tSt').style.color=isDemo?'#B45309':'#047857';
     el('tUpd').textContent='Update: '+d.updated;
+    // Build sidebar nav dynamically from PC config — always in sync
+    buildAppNav(null);
     renderHome();
   });
 }
