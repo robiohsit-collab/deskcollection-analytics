@@ -869,13 +869,30 @@ function renderApp(app){
       }).join('')+'</div></div>'+bktTrendRows+'</div>';
   }
 
-  // Placeholder untuk section yang butuh data agent (loading state)
-  html+='<div class="sc" id="agentDataSection"><div class="emt">⏳ Memuat data agent...</div></div>';
+  // Cek apakah ini re-render karena filter berubah (bukan navigasi baru)
+  var isRefilter=curApp===app && !!el('agentDataSection');
 
-  el('aCon').innerHTML=html;
+  if(isRefilter){
+    // Jangan hapus konten lama — tampilkan loading bar tipis di atas saja
+    el('aCon').style.opacity='0.6';
+    el('aCon').style.pointerEvents='none';
+    // Update bagian atas (KPI, tren akun) tapi biarkan agentDataSection tetap ada
+    var existingAgent=el('agentDataSection');
+    var tmpDiv=document.createElement('div');
+    tmpDiv.innerHTML=html+'<div class="sc" id="agentDataSection">'+
+      (existingAgent?existingAgent.innerHTML:'<div class="emt">⏳ Memuat...</div>')+
+      '</div>';
+    el('aCon').innerHTML=tmpDiv.innerHTML;
+  } else {
+    // Navigasi baru — tampilkan loading placeholder
+    html+='<div class="sc" id="agentDataSection"><div class="emt">⏳ Memuat data agent...</div></div>';
+    el('aCon').innerHTML=html;
+  }
 
   // Fetch data agent asli, lalu render section analisa
   fetchAgentData(app).then(function(agentData){
+    el('aCon').style.opacity='';
+    el('aCon').style.pointerEvents='';
     if(curApp!==app||curPg!=='app')return; // user sudah pindah halaman
     _lastAgentData=agentData;
     renderAgentSections(app, p, agentData);
@@ -1177,11 +1194,23 @@ function renderAllApps(){
 function renderWeekly(){
   if(!G)return;
   el('wEy').textContent='ACR — '+(F.app||'Semua Aplikasi')+' / '+(F.m||'Semua Bulan');
-  el('wKPI').innerHTML='<div class="kc"><div class="kl">Memuat...</div><div class="kv" style="color:var(--txt2)">...</div></div>'.repeat(4);
-  el('wGrid').innerHTML='<div style="grid-column:1/-1" class="emt">⏳ Memuat data ACR...</div>';
-  el('wTbl').innerHTML='';
+
+  // Kalau sudah ada data sebelumnya, redup saja jangan kosongkan
+  var hasExisting=el('wGrid')&&el('wGrid').children.length>0;
+  if(hasExisting){
+    el('wGrid').style.opacity='0.5';
+    el('wGrid').style.pointerEvents='none';
+    el('wTbl').style.opacity='0.5';
+  } else {
+    el('wKPI').innerHTML='<div class="kc"><div class="kl">Memuat...</div><div class="kv" style="color:var(--txt2)">...</div></div>'.repeat(4);
+    el('wGrid').innerHTML='<div style="grid-column:1/-1" class="emt">⏳ Memuat data ACR...</div>';
+    el('wTbl').innerHTML='';
+  }
 
   fetchWeeklyData().then(function(d){
+    el('wGrid').style.opacity='';
+    el('wGrid').style.pointerEvents='';
+    el('wTbl').style.opacity='';
     if(curPg!=='weekly')return;
     renderWeeklyTable(d);
   });
