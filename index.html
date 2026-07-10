@@ -519,7 +519,7 @@ function fetchD(forceRefresh){
       showErr('Gagal akses API');resolve(demoD());
     };
     // Tambah t= hanya saat forceRefresh
-    var url=API_URL+'?action=home&callback='+cb+(forceRefresh?'&t='+Date.now():'');
+    var url=API_URL+'?action=home&callback='+cb+(F.y?'&tahun='+encodeURIComponent(F.y):'')+(F.m?'&bulan='+encodeURIComponent(F.m):'')+(forceRefresh?'&t='+Date.now():'');
     sc.src=url;
     document.body.appendChild(sc);
   });
@@ -538,7 +538,10 @@ function refreshData(){
       el('tSt').textContent='Live';
       el('tSt').style.color='#047857';
       el('errBar').style.display='none';
-      if(curPg==='home')renderHome();
+      if(curPg==='home'){
+    // Home butuh re-fetch karena data berubah sesuai filter tahun/bulan
+    fetchD(true).then(function(d){G=d;renderHome();});
+  }
       else if(curPg==='app'&&curApp)renderApp(curApp);
       else if(curPg==='weekly')renderWeekly();
     });
@@ -614,10 +617,14 @@ function updSbar(pg,app){
   if(pg==='app'&&app&&app!=='all'&&PB[app]){
     populateBucketDropdown(PB[app]);
   } else if(pg==='app'&&(!app||app==='all')){
-    // Semua bucket dari semua aplikasi
     var allBkts=Object.values(PB).reduce(function(a,b){return a.concat(b);},[]);
     populateBucketDropdown([...new Set(allBkts)]);
   }
+
+  // Selalu restore TL dan Agent dropdown dari cache saat ganti halaman
+  // supaya tidak pernah kosong
+  if(_lastTLList&&_lastTLList.length>0) populateTLDropdown(_lastTLList);
+  if(_lastAgentList&&_lastAgentList.length>0) populateAgentDropdown(_lastAgentList);
   // App list always visible - just highlight active
   var allApps=['all','Kredione','Pinjamin','Rupiah Cepat','Kredit OK','Gopin Nurul','Gopin Nandalika'];
   allApps.forEach(function(a){
@@ -708,29 +715,56 @@ function selDate(ds){
 }
 
 function applyF(){
-  F.y=el('fY').value;F.m=el('fM').value;
-  F.b=el('fB').value;F.tl=el('fTL').value;F.ag=el('fAg').value;
+  // Simpan isi dropdown SEBELUM diproses
+  F.y=el('fY').value; F.m=el('fM').value;
+  F.b=el('fB').value; F.tl=el('fTL').value; F.ag=el('fAg').value;
   F.app=el('fApp')?el('fApp').value:'';
   resetFilterHighlight();
-  // Invalidate SEMUA cache saat filter berubah — mencegah data stale
+
+  // Snapshot isi dropdown TL dan Agent sekarang
+  // agar bisa di-restore setelah DOM direbuild
+  var snapshotTL=Array.from(el('fTL').options).map(function(o){return o.value;}).filter(Boolean);
+  var snapshotAg=Array.from(el('fAg').options).map(function(o){return o.value;}).filter(Boolean);
+  if(snapshotTL.length>0) _lastTLList=snapshotTL;
+  if(snapshotAg.length>0) _lastAgentList=snapshotAg;
+
+  // Invalidate cache
   _cpCache={};
   _agentDataCache={};
-  // Jangan pakai cache home data yang sudah ada untuk halaman app
-  // (home data tidak terpengaruh filter, tapi agent data harus fresh)
-  if(curPg==='app'&&curApp)renderApp(curApp);
+
+  // Invalidate client-side home cache supaya re-fetch dengan filter baru
+  if(_dataCache)_dataCache={home:null,spv:null,lastFetch:0};
+
+  if(curPg==='home'){
+    // Home butuh re-fetch karena data berubah sesuai filter tahun/bulan
+    fetchD(true).then(function(d){G=d;renderHome();});
+  }
+  else if(curPg==='app'&&curApp)renderApp(curApp);
   else if(curPg==='weekly')renderWeekly();
   else if(curPg==='chart')renderCB();
+  else if(curPg==='spv')renderSPV();
 }
 function resetF(){
   F={y:'',m:'',b:'',tl:'',ag:'',app:'',d1:null,d2:null};
   ['fY','fM','fB','fTL','fAg'].forEach(function(id){el(id).value='';});
   if(el('fApp'))el('fApp').value='';
+  // Reset dropdown TL dan Agent ke "Semua" saja
+  // _lastTLList dan _lastAgentList tetap dipertahankan
+  // supaya saat user navigasi ke halaman lagi, nama masih muncul
+  populateTLDropdown(_lastTLList||[]);
+  populateAgentDropdown(_lastAgentList||[]);
+  populateBucketDropdown(Object.values(PB).reduce(function(a,b){return a.concat(b);},[]).filter(function(v,i,s){return s.indexOf(v)===i;}));
   renderCal();applyF();
 }
 
 // ── RENDER HOME ───────────────────────────────────────────────────────────
 function renderHome(){
   if(!G)return;
+  // Saat filter berubah, redup konten lama sambil fetch baru
+  var hKPI=el('hKPI');
+  if(hKPI&&hKPI.children.length>0){
+    hKPI.style.opacity='0.6';
+  }
   var ci=G.curMonthIdx;
   var months=G.months.slice(0,ci+1);
   el('hEy').textContent='Desk Collection — '+G.curMonth+' 2025';
@@ -793,6 +827,7 @@ function renderHome(){
     +tots.map(function(t,mi){return '<td style="color:'+(mi===ci?'#a78bfa':'var(--navy)')+'">'+t+'</td>';}).join('')
     +'<td style="color:'+dc(td2)+'">'+(td2>0?'+':'')+td2+'</td></tr></tbody>';
   el('hTbl').innerHTML=th+tb;
+  el('hKPI').style.opacity='';
 }
 
 function mkKPI(lbl,color,val,sub,dcolor,dtxt){
@@ -820,6 +855,8 @@ function fetchAgentData(app){
       +(F.b?'&bucket='+encodeURIComponent(F.b):'')
       +(F.tl?'&tl='+encodeURIComponent(F.tl):'')
       +(F.ag?'&agent='+encodeURIComponent(F.ag):'')
+      +(F.d1?'&dari='+encodeURIComponent(F.d1.toISOString().split('T')[0]):'')
+      +(F.d2?'&sampai='+encodeURIComponent(F.d2.toISOString().split('T')[0]):'')
       +'&t='+Date.now();
     sc.src=url;
     document.body.appendChild(sc);
@@ -920,7 +957,9 @@ function renderApp(app){
       '</div>';
     el('aCon').innerHTML=tmpDiv.innerHTML;
   } else {
-    // Navigasi baru — tampilkan loading placeholder
+    // Navigasi baru — restore dropdown dulu, baru tampilkan loading
+    if(_lastTLList.length>0) populateTLDropdown(_lastTLList);
+    if(_lastAgentList.length>0) populateAgentDropdown(_lastAgentList);
     html+='<div class="sc" id="agentDataSection"><div class="emt">⏳ Memuat data agent...</div></div>';
     el('aCon').innerHTML=html;
   }
@@ -941,10 +980,11 @@ function renderAgentSections(app, p, ad){
   if(!sec)return;
 
   if(!ad.hasData || !ad.agents || !ad.agents.length){
-    sec.outerHTML='<div class="sc" id="agentDataSection"><div class="emt">📭 Belum ada data untuk filter ini di sheet All Data. Isi data harian TL untuk melihat analisa.</div></div>';
-    // Reset semua dropdown ke kosong kalau tidak ada data
-    populateTLDropdown([]);
-    populateAgentDropdown([]);
+    sec.outerHTML='<div class="sc" id="agentDataSection"><div class="emt">📭 Belum ada data untuk filter ini. Coba ubah atau reset filter.</div></div>';
+    // JANGAN kosongkan TL/Agent dropdown — pertahankan list yang sudah ada
+    // supaya user bisa ganti filter tanpa kehilangan semua pilihan
+    if(_lastTLList.length>0) populateTLDropdown(_lastTLList);
+    if(_lastAgentList.length>0) populateAgentDropdown(_lastAgentList);
     populateBucketDropdown(p.buckets||[]);
     return;
   }
@@ -964,6 +1004,14 @@ function renderAgentSections(app, p, ad){
 
   var s=ad.summary;
   var html='';
+
+  // ── UPDATE KPI CARD dengan data filtered dari agent analysis ─────────
+  // Ini menggantikan nilai stale dari G.projects yang tidak ikut filter
+  el('aKPI').innerHTML=
+    mkKPI('Total Akun',color,p.akunRef||0)
+    +mkKPI('Payment','#047857',fRp(s.totalPay))
+    +mkKPI('Rate',color,s.totalCall>0?(s.totalConn/s.totalCall*100).toFixed(1)+'%':'0%')
+    +mkKPI('Agent Aktif',color,s.agentCount);
 
   // ── ANALISA SINGKAT ──────────────────────────────────────────────────
   var analisa=[];
@@ -1177,6 +1225,9 @@ function renderAgentSections(app, p, ad){
   html+='<div class="sc"><div class="sey">Daftar Bucket</div><div class="st">'+p.buckets.length+' Bucket</div>'+bktRows+'</div>';
 
   sec.outerHTML='<div id="agentDataSection">'+html+'</div>';
+  // Restore aCon opacity setelah selesai render
+  var aConEl=el('aCon');
+  if(aConEl){aConEl.style.opacity='';aConEl.style.pointerEvents='';}
 }
 
 // ── ALL APPS COMPARISON ────────────────────────────────────────────────────
@@ -1241,6 +1292,9 @@ function renderWeekly(){
     el('wGrid').style.pointerEvents='none';
     el('wTbl').style.opacity='0.5';
   } else {
+    // Tetap restore TL/Agent walau belum ada data sebelumnya
+    if(_lastTLList.length>0) populateTLDropdown(_lastTLList);
+    if(_lastAgentList.length>0) populateAgentDropdown(_lastAgentList);
     el('wKPI').innerHTML='<div class="kc"><div class="kl">Memuat...</div><div class="kv" style="color:var(--txt2)">...</div></div>'.repeat(4);
     el('wGrid').innerHTML='<div style="grid-column:1/-1" class="emt">⏳ Memuat data ACR...</div>';
     el('wTbl').innerHTML='';
@@ -1273,6 +1327,8 @@ function fetchWeeklyData(){
       +(F.b?'&bucket='+encodeURIComponent(F.b):'')
       +(F.tl?'&tl='+encodeURIComponent(F.tl):'')
       +(F.ag?'&agent='+encodeURIComponent(F.ag):'')
+      +(F.d1?'&dari='+encodeURIComponent(F.d1.toISOString().split('T')[0]):'')
+      +(F.d2?'&sampai='+encodeURIComponent(F.d2.toISOString().split('T')[0]):'')
       +'&t='+Date.now();
     sc.src=url;
     document.body.appendChild(sc);
@@ -1282,8 +1338,11 @@ function fetchWeeklyData(){
 function renderWeeklyTable(d){
   if(!d.hasData || !d.agents || !d.agents.length){
     el('wKPI').innerHTML=mkKPI('Total Agent','var(--navy)',0)+mkKPI('Total Payment','#047857','Rp 0')+mkKPI('Best Agent','#B45309','-')+mkKPI('Rata-rata','#0369A1','Rp 0');
-    el('wGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#3A4560;background:var(--s2);border:1px solid var(--bd);border-radius:var(--rad)"><div style="font-size:32px;margin-bottom:10px">📭</div><div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:6px">Belum Ada Data</div><div style="font-size:12px">Data akan muncul setelah TL mengisi sheet All Data sesuai filter yang dipilih</div></div>';
+    el('wGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#3A4560;background:var(--s2);border:1px solid var(--bd);border-radius:var(--rad)"><div style="font-size:32px;margin-bottom:10px">📭</div><div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:6px">Belum Ada Data</div><div style="font-size:12px">Coba ubah atau reset filter.</div></div>';
     el('wTbl').innerHTML='';
+    // JANGAN kosongkan TL/Agent — restore dari cache
+    if(_lastTLList.length>0) populateTLDropdown(_lastTLList);
+    if(_lastAgentList.length>0) populateAgentDropdown(_lastAgentList);
     return;
   }
 
@@ -1334,10 +1393,15 @@ function renderMonthly(){
   if(!G)return;
   el('mEy').textContent='Monthly Perform — '+(curApp||'Semua')+' / '+(F.m||'Juli');
   var ags=[];
+  // Guard: jangan crash kalau data kosong
+  if(!ags.length){
+    el('mKPI').innerHTML=mkKPI('Total Agent','var(--navy)',0)+mkKPI('Total Payment','var(--green)','Rp 0')+mkKPI('Rata-rata Rate','#f59e0b','0%')+mkKPI('Top Performer','#0ea5e9','-');
+    return;
+  }
   var totPay=ags.reduce(function(s,a){return s+a.total;},0);
   var avgRate=(ags.reduce(function(s,a){return s+a.rate;},0)/ags.length).toFixed(1);
   var top=ags.slice().sort(function(a,b){return a.rank-b.rank;})[0];
-  el('mKPI').innerHTML=mkKPI('Total Agent','var(--navy)',ags.length)+mkKPI('Total Payment','var(--green)',fRp(totPay))+mkKPI('Rata-rata Rate','#f59e0b',avgRate+'%')+mkKPI('Top Performer','#0ea5e9',top.name.split(' ')[0]);
+  el('mKPI').innerHTML=mkKPI('Total Agent','var(--navy)',ags.length)+mkKPI('Total Payment','var(--green)',fRp(totPay))+mkKPI('Rata-rata Rate','#f59e0b',avgRate+'%')+mkKPI('Top Performer','#0ea5e9',top?top.name.split(' ')[0]:'-');
   var th='<thead><tr><th class="tl" rowspan="2">AKUN</th><th class="tl" rowspan="2">NAMA AGENT</th><th rowspan="2">TOTAL PAYMENT</th><th colspan="4" style="background:rgba(99,102,241,.18);color:var(--ac)">WEEKLY PAYMENT</th><th rowspan="2">%</th><th rowspan="2">RANK</th></tr><tr><th>W1</th><th>W2</th><th>W3</th><th>W4</th></tr></thead>';
   var sorted=ags.slice().sort(function(a,b){return a.rank-b.rank;});
   var tw1=sorted.reduce(function(s,a){return s+a.w[0];},0);
@@ -1383,7 +1447,7 @@ function fetchChartPreview(app){
       resolve(res);
     };
     sc.onerror=function(){clearTimeout(to);delete window[cb];resolve({hasData:false,buckets:[],metrics:{},agentCount:0});};
-    sc.src=API_URL+'?action=chartpreview&callback='+cb+'&app='+encodeURIComponent(app)+'&t='+Date.now();
+    sc.src=API_URL+'?action=chartpreview&callback='+cb+'&app='+encodeURIComponent(app)+(F.y?'&tahun='+encodeURIComponent(F.y):'')+(F.m?'&bulan='+encodeURIComponent(F.m):'')+'&t='+Date.now();
     document.body.appendChild(sc);
   });
 }
@@ -1638,11 +1702,13 @@ function togFlowMenu(){
 }
 
 // ── PERFORMA SPV STATE ────────────────────────────────────────────────────
-var spvState={tahun:'2025',dari:'',sampai:'',mode:'avg',rawData:null};
+var spvState={tahun:'',dari:'',sampai:'',mode:'avg',rawData:null};
 
 // ── RENDER PERFORMA SPV ───────────────────────────────────────────────────
 function renderSPV(){
   if(!G)return;
+  // Sync tahun dari filter sidebar kalau spvState belum diset manual
+  if(F.y && !spvState._manualTahun) spvState.tahun=F.y;
   // Render filter panel + controls first
   renderSPVControls();
   // Show loading overlay on existing content
@@ -1705,7 +1771,7 @@ function loadSPVData(){
   var script=document.createElement('script');
   var timeout=setTimeout(function(){
     delete window[cbName];try{document.body.removeChild(script);}catch(e){}
-    spvState.rawData=getDemoSPVData();renderSPVTable();
+    spvState.rawData=[];spvState.error='API tidak dapat diakses — pastikan Apps Script sudah di-deploy';renderSPVTable();
   },10000);
   window[cbName]=function(d){
     clearTimeout(timeout);delete window[cbName];
@@ -1713,7 +1779,7 @@ function loadSPVData(){
     spvState.rawData=d.error?getDemoSPVData():d;
     renderSPVTable();
   };
-  script.onerror=function(){clearTimeout(timeout);delete window[cbName];spvState.rawData=getDemoSPVData();renderSPVTable();};
+  script.onerror=function(){clearTimeout(timeout);delete window[cbName];spvState.rawData=[];spvState.error='API tidak dapat diakses — pastikan Apps Script sudah di-deploy';renderSPVTable();};
   var url=API_URL+'?action=spvperf&callback='+cbName
     +(st.tahun?'&tahun='+st.tahun:'')
     +(st.dari?'&dari='+encodeURIComponent(st.dari):'')
@@ -1728,7 +1794,11 @@ function renderSPVTable(){
   var spvCon=el('spvContent');
   if(spvCon){spvCon.style.opacity='';spvCon.style.pointerEvents='';}
   if(!data.length){
-    el('spvContent').innerHTML='<div class="emt">Belum ada data. Isi sheet "Performa SPV" di Google Sheets terlebih dahulu.</div>';
+    var errMsg=spvState&&spvState.error
+      ?'⚠️ '+spvState.error
+      :'📭 Belum ada data. Isi sheet "Performa SPV" di Google Sheets atau cek filter.';
+    var errColor=spvState&&spvState.error?'#B91C1C':'#5A5650';
+    el('spvContent').innerHTML='<div class="emt" style="color:'+errColor+'">'+errMsg+'</div>';
     return;
   }
 
@@ -1885,6 +1955,8 @@ function renderSPVDetailTable(data, mode){
 }
 
 function getDemoSPVData(){
+  // Return empty — SPV data harus dari sheet Performa SPV yang sudah diisi
+  // Tampilkan pesan informatif kalau API tidak tersedia
   return [];
 }
 
@@ -2168,7 +2240,7 @@ function demoD(){
   return{
     updated:'Belum ada data — '+new Date().toLocaleString('id-ID'),
     curMonth:MN[new Date().getMonth()],
-    curMonthIdx:new Date().getMonth(),
+    curMonthIdx: (F.m&&MN.indexOf(F.m)>=0) ? MN.indexOf(F.m) : new Date().getMonth(),
     months:MN,
     kpi:{totalAkun:0,totalDelta:0,totalPayment:'Rp 0',totalProjects:Object.keys(PC).length},
     akun:akun,
@@ -2215,7 +2287,7 @@ function populateTLDropdown(tlList){
 function populateBucketDropdown(bktList){
   var sel=el('fB');
   if(!sel)return;
-  var cur=sel.value;
+  var cur=F.b||sel.value;
   sel.innerHTML='<option value="">Semua</option>';
   (bktList||[]).forEach(function(b){
     var o=document.createElement('option');
