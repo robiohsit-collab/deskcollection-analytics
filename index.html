@@ -665,7 +665,8 @@ function updFOpts(app){
 function populateAgentDropdown(agentList){
   var sel=el('fAg');
   if(!sel)return;
-  var cur=sel.value;
+  // Pertahankan nilai yang sudah dipilih (F.ag)
+  var cur=F.ag||sel.value;
   sel.innerHTML='<option value="">Semua</option>';
   (agentList||[]).sort().forEach(function(ag){
     var o=document.createElement('option');
@@ -673,6 +674,7 @@ function populateAgentDropdown(agentList){
     if(ag===cur)o.selected=true;
     sel.appendChild(o);
   });
+  if(cur&&sel.value!==cur)sel.value='';
 }
 
 // ── CALENDAR ──────────────────────────────────────────────────────────────
@@ -826,6 +828,7 @@ function fetchAgentData(app){
 
 // ── RENDER APP ────────────────────────────────────────────────────────────
 var _lastRenderedApp=null, _lastAgentData=null;
+var _lastTLList=[], _lastAgentList=[];
 function renderApp(app){
   if(!G)return;
   if(app==='all'||!app){renderAllApps();return;}
@@ -902,6 +905,10 @@ function renderApp(app){
   var isRefilter=curApp===app && !!el('agentDataSection');
 
   if(isRefilter){
+    // Restore TL dan Agent dropdown dari list terakhir yang diketahui
+    // supaya tidak kosong selama fetch berlangsung
+    if(_lastTLList.length>0)populateTLDropdown(_lastTLList);
+    if(_lastAgentList.length>0)populateAgentDropdown(_lastAgentList);
     // Jangan hapus konten lama — tampilkan loading bar tipis di atas saja
     el('aCon').style.opacity='0.6';
     el('aCon').style.pointerEvents='none';
@@ -942,15 +949,15 @@ function renderAgentSections(app, p, ad){
     return;
   }
 
-  // Populate TL dropdown dari data real
+  // Populate TL/Agent/Bucket dropdown dari data real — simpan ke cache
   var tlList=[...new Set((ad.agents||[]).map(function(a){return a.tl||'';}).filter(Boolean))];
-  populateTLDropdown(tlList);
+  if(tlList.length>0)_lastTLList=tlList;
+  populateTLDropdown(tlList.length>0?tlList:_lastTLList);
 
-  // Populate Agent dropdown dari data real
   var agentList=[...new Set((ad.agents||[]).map(function(a){return a.name||'';}).filter(Boolean))];
-  populateAgentDropdown(agentList);
+  if(agentList.length>0)_lastAgentList=agentList;
+  populateAgentDropdown(agentList.length>0?agentList:_lastAgentList);
 
-  // Populate Bucket dropdown dari buckets yang ada di data ini
   var bktList=Object.keys(ad.bucketMetrics||{});
   if(!bktList.length)bktList=p.buckets||[];
   populateBucketDropdown(bktList);
@@ -1227,6 +1234,9 @@ function renderWeekly(){
   // Kalau sudah ada data sebelumnya, redup saja jangan kosongkan
   var hasExisting=el('wGrid')&&el('wGrid').children.length>0;
   if(hasExisting){
+    // Restore dropdown TL/Agent selama fetch berlangsung
+    if(_lastTLList.length>0)populateTLDropdown(_lastTLList);
+    if(_lastAgentList.length>0)populateAgentDropdown(_lastAgentList);
     el('wGrid').style.opacity='0.5';
     el('wGrid').style.pointerEvents='none';
     el('wTbl').style.opacity='0.5';
@@ -1280,8 +1290,10 @@ function renderWeeklyTable(d){
   // Populate TL dan Agent dropdown dari data ACR yang baru dimuat
   var tlListW=[...new Set((d.agents||[]).map(function(a){return a.tl||'';}).filter(Boolean))];
   var agListW=[...new Set((d.agents||[]).map(function(a){return a.name||'';}).filter(Boolean))];
-  populateTLDropdown(tlListW);
-  populateAgentDropdown(agListW);
+  if(tlListW.length>0)_lastTLList=tlListW;
+  if(agListW.length>0)_lastAgentList=agListW;
+  populateTLDropdown(tlListW.length>0?tlListW:_lastTLList);
+  populateAgentDropdown(agListW.length>0?agListW:_lastAgentList);
 
   var ags=d.agents;
   var tw1=ags.reduce(function(s,a){return s+(a.w[0]||0);},0);
@@ -2187,7 +2199,8 @@ function populateFilters(){
 function populateTLDropdown(tlList){
   var sel=el('fTL');
   if(!sel)return;
-  var cur=sel.value;
+  // Pertahankan nilai yang sudah dipilih (F.tl), bukan hanya sel.value
+  var cur=F.tl||sel.value;
   sel.innerHTML='<option value="">Semua</option>';
   (tlList||[]).sort().forEach(function(tl){
     var o=document.createElement('option');
@@ -2195,6 +2208,8 @@ function populateTLDropdown(tlList){
     if(tl===cur)o.selected=true;
     sel.appendChild(o);
   });
+  // Pastikan sel.value sinkron dengan F.tl
+  if(cur&&sel.value!==cur)sel.value='';
 }
 
 function populateBucketDropdown(bktList){
