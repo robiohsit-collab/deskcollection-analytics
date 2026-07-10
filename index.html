@@ -513,30 +513,49 @@ function fetchD(forceRefresh){
 function refreshData(){
   el('tSt').textContent='Memuat...';
   el('tSt').style.color='#B45309';
-  // Clear client cache
+  // Clear client cache dulu
   _dataCache={home:null,spv:null,lastFetch:0};
-  // Clear server cache via API then fetch fresh
-  if(API_URL&&!API_URL.includes('PASTE_URL')){
-    var cbC='cbc'+Date.now();
-    var sc=document.createElement('script');
-    window[cbC]=function(){
-      delete window[cbC];
-      try{document.body.removeChild(sc);}catch(e){}
-      fetchD(true).then(function(d){
-        G=d;
-        el('tSt').textContent='Live';
-        el('tSt').style.color='#047857';
-        if(curPg==='home')renderHome();
-        else if(curPg==='app'&&curApp)renderApp(curApp);
-        else if(curPg==='weekly')renderWeekly();
-      });
-    };
-    sc.onerror=function(){delete window[cbC];fetchD(true).then(function(d){G=d;renderHome();});};
-    sc.src=API_URL+'?action=clearcache&callback='+cbC;
-    document.body.appendChild(sc);
-  } else {
-    fetchD(true).then(function(d){G=d;renderHome();});
+
+  function doFetch(){
+    fetchD(true).then(function(d){
+      G=d;
+      el('tSt').textContent='Live';
+      el('tSt').style.color='#047857';
+      el('errBar').style.display='none';
+      if(curPg==='home')renderHome();
+      else if(curPg==='app'&&curApp)renderApp(curApp);
+      else if(curPg==='weekly')renderWeekly();
+    });
   }
+
+  if(!API_URL||API_URL.includes('PASTE_URL')){doFetch();return;}
+
+  // Coba clear server cache dulu, kalau gagal langsung fetch saja
+  var cbC='cbc'+Date.now();
+  var sc=document.createElement('script');
+  var done=false;
+  var to=setTimeout(function(){
+    if(done)return; done=true;
+    delete window[cbC];
+    try{document.body.removeChild(sc);}catch(e){}
+    doFetch(); // timeout -> langsung fetch tanpa clear cache
+  },5000);
+  window[cbC]=function(){
+    if(done)return; done=true;
+    clearTimeout(to);
+    delete window[cbC];
+    try{document.body.removeChild(sc);}catch(e){}
+    doFetch();
+  };
+  sc.onerror=function(){
+    if(done)return; done=true;
+    clearTimeout(to);
+    delete window[cbC];
+    try{document.body.removeChild(sc);}catch(e){}
+    doFetch(); // error -> tetap fetch, jangan tampilkan error
+  };
+  sc.src=API_URL+'?action=clearcache&callback='+cbC;
+  document.body.appendChild(sc);
 }
 function showErr(m){var e=el('errBar');e.textContent='⚠ '+m;e.style.display='block';}
 
