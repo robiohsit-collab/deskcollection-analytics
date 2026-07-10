@@ -250,24 +250,24 @@ tr:hover td{background:var(--navy3);cursor:pointer}
       <option value="Gopin Nandalika">Gopin Nandalika</option>
     </select>
     <div class="fl">Tahun</div>
-    <select class="fs" id="fY"><option value="" selected>Semua</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>
+    <select class="fs" id="fY" onchange="onFilterChange()"><option value="" selected>Semua</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>
     <div class="fl">Bulan</div>
-    <select class="fs" id="fM">
+    <select class="fs" id="fM" onchange="onFilterChange()">
       <option value="">Semua</option>
       <option>Januari</option><option>Februari</option><option>Maret</option><option>April</option>
       <option>Mei</option><option>Juni</option><option selected>Juli</option><option>Agustus</option>
       <option>September</option><option>Oktober</option><option>November</option><option>Desember</option>
     </select>
     <div class="fl">Bucket</div>
-    <select class="fs" id="fB"><option value="">Semua</option></select>
+    <select class="fs" id="fB" onchange="onFilterChange()"><option value="">Semua</option></select>
     <div class="fl">Tim Leader</div>
-    <select class="fs" id="fTL"><option value="">Semua</option></select>
+    <select class="fs" id="fTL" onchange="onFilterChange()"><option value="">Semua</option></select>
     <div class="fl">Nama Agent</div>
-    <select class="fs" id="fAg"><option value="">Semua</option></select>
+    <select class="fs" id="fAg" onchange="onFilterChange()"><option value="">Semua</option></select>
     <div class="fl">Tanggal</div>
     <div id="miniCal"></div>
     <div class="dn" id="calInfo"></div>
-    <button class="btn-a" onclick="applyF()">Terapkan Filter</button>
+    <button class="btn-a" id="btnApplyF" onclick="applyF()">Terapkan Filter</button>
     <button class="btn-r" onclick="resetF()">Reset Filter</button>
   </div>
   <div class="ndiv" id="nd2"></div>
@@ -431,6 +431,22 @@ const CTYPES=['Bar','Stacked','Grouped','Line','Area','Donut','Radar','Waterfall
 // State
 let G=null, curPg='home', curApp=null;
 let F={y:'',m:'',b:'',tl:'',ag:'',app:'',d1:null,d2:null};
+
+// Highlight tombol Terapkan saat filter berubah
+function onFilterChange(){
+  var btn=el('btnApplyF');
+  if(btn){
+    btn.style.background='#B45309';
+    btn.textContent='● Terapkan Filter';
+  }
+}
+function resetFilterHighlight(){
+  var btn=el('btnApplyF');
+  if(btn){
+    btn.style.background='';
+    btn.textContent='Terapkan Filter';
+  }
+}
 let calS={y:2025,m:6};
 let slots=[];
 
@@ -693,8 +709,15 @@ function applyF(){
   F.y=el('fY').value;F.m=el('fM').value;
   F.b=el('fB').value;F.tl=el('fTL').value;F.ag=el('fAg').value;
   F.app=el('fApp')?el('fApp').value:'';
+  resetFilterHighlight();
+  // Invalidate SEMUA cache saat filter berubah — mencegah data stale
+  _cpCache={};
+  _agentDataCache={};
+  // Jangan pakai cache home data yang sudah ada untuk halaman app
+  // (home data tidak terpengaruh filter, tapi agent data harus fresh)
   if(curPg==='app'&&curApp)renderApp(curApp);
   else if(curPg==='weekly')renderWeekly();
+  else if(curPg==='chart')renderCB();
 }
 function resetF(){
   F={y:'',m:'',b:'',tl:'',ag:'',app:'',d1:null,d2:null};
@@ -816,7 +839,13 @@ function renderApp(app){
 
   el('aEy').textContent='Project — '+app;
   el('aTi').textContent=app;
-  el('aDe').textContent='SPV: '+p.spv+' · '+p.buckets.length+' bucket · Filter: '+(F.m||'Semua bulan');
+  var filterDesc=[];
+  if(F.y)filterDesc.push(F.y);
+  if(F.m)filterDesc.push(F.m);
+  if(F.b)filterDesc.push('Bucket: '+F.b);
+  if(F.tl)filterDesc.push('TL: '+F.tl);
+  if(F.ag)filterDesc.push('Agent: '+F.ag);
+  el('aDe').textContent='SPV: '+p.spv+' · '+p.buckets.length+' bucket'+(filterDesc.length?' · '+filterDesc.join(', '):'');
   el('aKPI').innerHTML=mkKPI('Total Akun',color,p.akunRef||cur)+mkKPI('Payment','#047857',p.payment)+mkKPI('Rate',color,p.rate)+mkKPI('Perubahan',dc(dv),(dv>=0?'+':'')+dv);
 
   // Tren akun bulanan (dari Referensi Akun — G sudah tersedia)
@@ -1350,9 +1379,17 @@ function fetchChartPreview(app){
 function renderCB(){
   slots=loadSlots();
   var app=el('chApp')?el('chApp').value||'all':'all';
-  el('chSlots').innerHTML='<div class="emt">⏳ Memuat data untuk preview...</div>';
+  var hasExisting=el('chSlots')&&el('chSlots').children.length>0&&el('chSlots').innerHTML.indexOf('Memuat')<0;
+  if(hasExisting){
+    el('chSlots').style.opacity='0.5';
+    el('chSlots').style.pointerEvents='none';
+  } else {
+    el('chSlots').innerHTML='<div class="emt">⏳ Memuat data untuk preview...</div>';
+  }
   fetchChartPreview(app).then(function(d){
     _cpData=d;
+    el('chSlots').style.opacity='';
+    el('chSlots').style.pointerEvents='';
     renderSlots();
   });
 }
@@ -1596,6 +1633,12 @@ function renderSPV(){
   if(!G)return;
   // Render filter panel + controls first
   renderSPVControls();
+  // Show loading overlay on existing content
+  var spvCon=el('spvContent');
+  if(spvCon&&spvCon.innerHTML&&spvCon.innerHTML.indexOf('Belum')<0&&spvCon.innerHTML.length>50){
+    spvCon.style.opacity='0.5';
+    spvCon.style.pointerEvents='none';
+  }
   // Load data then render
   loadSPVData();
 }
@@ -1670,6 +1713,8 @@ function loadSPVData(){
 function renderSPVTable(){
   var data=spvState.rawData||[];
   var mode=spvState.mode;
+  var spvCon=el('spvContent');
+  if(spvCon){spvCon.style.opacity='';spvCon.style.pointerEvents='';}
   if(!data.length){
     el('spvContent').innerHTML='<div class="emt">Belum ada data. Isi sheet "Performa SPV" di Google Sheets terlebih dahulu.</div>';
     return;
